@@ -15,4 +15,8 @@ public class App extends Application {
     public static App getInstance() {
         return singleton;
     }
+
+    public static String tag(Object logSubject) {
+        return logSubject.getClass().getSimpleName();
+    }
 }
