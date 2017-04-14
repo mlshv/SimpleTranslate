@@ -1,11 +1,15 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- Основная тема приложения -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
     </style>
 
+    <style name="favoriteCheckboxStyle" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/favoriteCheckboxChecked</item>
+        <item name="android:textColorSecondary">@color/favoriteCheckboxUnchecked</item>
+    </style>
 </resources>
