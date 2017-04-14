@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.fragments;
+package me.mlshv.simpletranslate.ui.fragments;
 
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -28,10 +28,10 @@ import java.util.Map;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.db.DbHelper;
-import me.mlshv.simpletranslate.db.DbManager;
-import me.mlshv.simpletranslate.model.Translation;
-import me.mlshv.simpletranslate.model.TranslationVariations;
+import me.mlshv.simpletranslate.data.db.DbHelper;
+import me.mlshv.simpletranslate.data.db.DbManager;
+import me.mlshv.simpletranslate.data.model.Translation;
+import me.mlshv.simpletranslate.data.model.TranslationVariations;
 import me.mlshv.simpletranslate.network.TranslationRequest;
 import me.mlshv.simpletranslate.network.TranslationVariationsRequest;
 import me.mlshv.simpletranslate.util.SpHelper;

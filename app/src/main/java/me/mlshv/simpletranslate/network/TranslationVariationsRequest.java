@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import me.mlshv.simpletranslate.model.TranslationVariations;
+import me.mlshv.simpletranslate.data.model.TranslationVariations;
 
 public class TranslationVariationsRequest {
     private HttpURLConnection urlConnection = null;

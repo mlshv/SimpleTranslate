@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.db;
+package me.mlshv.simpletranslate.data.db;
 
 
 import android.content.Context;

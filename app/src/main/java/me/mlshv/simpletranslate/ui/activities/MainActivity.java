@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.activities;
+package me.mlshv.simpletranslate.ui.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +8,9 @@ import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.fragments.FavoritesHistoryContainerFragment;
-import me.mlshv.simpletranslate.fragments.SettingsFragment;
-import me.mlshv.simpletranslate.fragments.TranslateFragment;
+import me.mlshv.simpletranslate.ui.fragments.FavoritesHistoryContainerFragment;
+import me.mlshv.simpletranslate.ui.fragments.SettingsFragment;
+import me.mlshv.simpletranslate.ui.fragments.TranslateFragment;
 
 public class MainActivity extends FragmentActivity {
 

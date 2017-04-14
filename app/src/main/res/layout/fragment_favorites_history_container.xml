@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
-    tools:context="me.mlshv.simpletranslate.fragments.FavoritesHistoryContainerFragment">
+    tools:context=".ui.fragments.FavoritesHistoryContainerFragment">
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"

@@ -1,7 +1,6 @@
-package me.mlshv.simpletranslate.fragments;
+package me.mlshv.simpletranslate.ui.fragments;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

@@ -1,8 +1,8 @@
-package me.mlshv.simpletranslate.model;
+package me.mlshv.simpletranslate.data.model;
 
 import android.database.Cursor;
 
-import me.mlshv.simpletranslate.db.DbHelper;
+import me.mlshv.simpletranslate.data.db.DbHelper;
 
 public class Translation {
     private final String term;

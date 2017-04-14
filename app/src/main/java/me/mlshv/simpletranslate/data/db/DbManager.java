@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.db;
+package me.mlshv.simpletranslate.data.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import me.mlshv.simpletranslate.model.Translation;
+import me.mlshv.simpletranslate.data.model.Translation;
 
 public class DbManager {
     private DbHelper dbHelper;

@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.model;
+package me.mlshv.simpletranslate.data.model;
 
 import android.util.Log;
 

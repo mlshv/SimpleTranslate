@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.fragments;
+package me.mlshv.simpletranslate.ui.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -13,9 +13,9 @@ import android.widget.TextView;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.db.DbHelper;
-import me.mlshv.simpletranslate.db.DbManager;
-import me.mlshv.simpletranslate.model.Translation;
+import me.mlshv.simpletranslate.data.db.DbHelper;
+import me.mlshv.simpletranslate.data.db.DbManager;
+import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.util.CursorRecyclerViewAdapter;
 
 public class HistoryFragment extends Fragment {
