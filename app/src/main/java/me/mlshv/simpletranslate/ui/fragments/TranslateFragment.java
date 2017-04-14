@@ -1,29 +1,23 @@
 package me.mlshv.simpletranslate.ui.fragments;
 
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import me.mlshv.simpletranslate.App;
@@ -34,6 +28,7 @@ import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
 import me.mlshv.simpletranslate.network.TranslationRequest;
 import me.mlshv.simpletranslate.network.TranslationVariationsRequest;
+import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.SpHelper;
 
 public class TranslateFragment extends Fragment {
@@ -189,62 +184,11 @@ public class TranslateFragment extends Fragment {
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         params.addRule(RelativeLayout.BELOW, R.id.translation_result_text);
-        ScrollView variationsView = renderVariationsView(translation.getVariations());
+        TranslationVariationsView variationsView =
+                new TranslationVariationsView(this.getActivity(), translation.getVariations());
         variationsView.setLayoutParams(params);
 
         rootLayout.addView(variationsView);
-    }
-
-    private ScrollView renderVariationsView(TranslationVariations variations) {
-
-        ScrollView resultView = new ScrollView(this.getActivity());
-        LinearLayout container = new LinearLayout(this.getActivity());
-        container.setOrientation(LinearLayout.VERTICAL);
-
-        // параметры для текстовых view
-        LinearLayout.LayoutParams paramsFirstLevel = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams paramsSecondLevel = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        // устанавливаем отступы
-        int marginStartFirstLevel = 13;
-        int marginStartSecondLevel = marginStartFirstLevel * 2;
-        marginStartFirstLevel = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, marginStartFirstLevel, getResources()
-                        .getDisplayMetrics());
-        marginStartSecondLevel = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, marginStartSecondLevel, getResources()
-                        .getDisplayMetrics());
-
-        paramsFirstLevel.setMarginStart(marginStartFirstLevel);
-        paramsSecondLevel.setMarginStart(marginStartSecondLevel);
-
-        LinkedHashMap<String, LinkedHashMap<String, String>> vMap = variations.getMap();
-        for (String variation : vMap.keySet()) {
-            TextView variationView = new TextView(getActivity());
-            variationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            variationView.setText(variation);
-            variationView.setLayoutParams(paramsFirstLevel);
-            container.addView(variationView);
-            for (Map.Entry<String, String> translationMeaning : vMap.get(variation).entrySet()) {
-                TextView translationView = new TextView(getActivity());
-                TextView meaningView = new TextView(getActivity());
-                translationView.setText(translationMeaning.getKey());
-                meaningView.setText(translationMeaning.getValue());
-                translationView.setLayoutParams(paramsSecondLevel);
-                meaningView.setLayoutParams(paramsSecondLevel);
-                translationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                meaningView.setTypeface(null, Typeface.ITALIC);
-                int secondaryTextColor = ContextCompat.getColor(this.getActivity(), R.color.colorTextSecondary);
-                meaningView.setTextColor(secondaryTextColor);
-                container.addView(translationView);
-                container.addView(meaningView);
-            }
-        }
-        resultView.addView(container);
-        return resultView;
     }
 
     private String getTranslationDirectionCodes() {
