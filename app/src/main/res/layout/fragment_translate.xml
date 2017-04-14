@@ -1,85 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?android:colorBackground"
+    android:layout_height="match_parent"
+    android:id="@+id/root">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
+        android:orientation="horizontal"
         android:id="@+id/relativeLayout"
         android:paddingLeft="@dimen/activity_horizontal_padding"
         android:paddingRight="@dimen/activity_horizontal_padding"
         android:paddingStart="@dimen/activity_horizontal_padding"
-        android:paddingEnd="@dimen/activity_horizontal_padding"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-        <Button
-            android:id="@+id/change_language_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⇆"
-            android:layout_alignBaseline="@+id/target_lang"
-            android:layout_alignBottom="@+id/target_lang"
-            android:layout_centerHorizontal="true" />
+        android:paddingEnd="@dimen/activity_horizontal_padding">
 
         <TextView
             android:id="@+id/source_lang"
-            android:text="source"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="source"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/change_language_button"
+            android:layout_toStartOf="@+id/change_language_button"
+            android:layout_alignParentBottom="true" />
+
+        <Button
+            android:id="@+id/change_language_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:padding="0dp"
+            android:layout_height="match_parent"
+            android:text="⇆"
+            android:textSize="20sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true" />
 
         <TextView
             android:id="@+id/target_lang"
-            android:text="target"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_alignBaseline="@+id/source_lang"
-            android:layout_alignBottom="@+id/source_lang"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="target"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/change_language_button"
+            android:layout_toEndOf="@+id/change_language_button"
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
     <EditText
         android:id="@+id/translate_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_alignBaseline="@+id/translate_button"
-        android:layout_alignBottom="@+id/translate_button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/translate_button"
-        android:layout_toStartOf="@+id/translate_button" />
-
-    <Button
-        android:id="@+id/translate_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:lines="6"
+        android:scrollHorizontally="false"
         android:layout_below="@+id/relativeLayout"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/translation_result_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
         android:text="Hello"
         android:textSize="24sp"
-        android:layout_marginLeft="27dp"
-        android:layout_marginStart="27dp"
         android:layout_below="@+id/translate_input"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="13dp"
+        android:layout_marginStart="13dp" />
 
 </RelativeLayout>
