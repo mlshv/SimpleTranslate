@@ -54,18 +54,20 @@ public class TranslationVariationsView extends ScrollView {
             variationsContainer.addView(variationView);
             for (Map.Entry<String, String> translationMeaning : vMap.get(variation).entrySet()) {
                 TextView translationView = new TextView(getContext());
-                TextView meaningView = new TextView(getContext());
                 translationView.setText(translationMeaning.getKey());
-                meaningView.setText(translationMeaning.getValue());
                 translationView.setLayoutParams(paramsSecondLevel);
-                meaningView.setLayoutParams(paramsSecondLevel);
                 translationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
-                meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, THIRD_LEVEL_TEXT_SIZE);
-                meaningView.setTypeface(null, Typeface.ITALIC);
                 int secondaryTextColor = ContextCompat.getColor(getContext(), R.color.colorTextSecondary);
-                meaningView.setTextColor(secondaryTextColor);
                 variationsContainer.addView(translationView);
-                variationsContainer.addView(meaningView);
+                if (!translationMeaning.getValue().isEmpty()) {
+                    TextView meaningView = new TextView(getContext());
+                    meaningView.setText(translationMeaning.getValue());
+                    meaningView.setLayoutParams(paramsSecondLevel);
+                    meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, THIRD_LEVEL_TEXT_SIZE);
+                    meaningView.setTypeface(null, Typeface.ITALIC);
+                    meaningView.setTextColor(secondaryTextColor);
+                    variationsContainer.addView(meaningView);
+                }
             }
         }
         this.addView(variationsContainer);
