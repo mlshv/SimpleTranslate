@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import me.mlshv.simpletranslate.App;
 
@@ -19,30 +20,42 @@ public class TranslationVariations {
           ...
         }
     */
-    private final LinkedHashMap<String, LinkedHashMap<String, String>> dictPage = new LinkedHashMap<>();
+    private Map<String, Map<String, String>> mapValue;
     private final String jsonData;
 
     public TranslationVariations(String responseJson) {
         jsonData = responseJson;
-        try {
-            buildFromJson(jsonData);
-        } catch (JSONException e) {
-            Log.e(App.tag(this), "TranslationVariations: исключения при парсинге JSON", e);
+    }
+
+    /**
+     * Ленивое свойство
+     */
+    public Map<String, Map<String, String>> getAsMap() {
+        if (mapValue == null) {
+            try {
+                initMapValue();
+            } catch (JSONException e) {
+                mapValue = new LinkedHashMap<>();
+                Log.e(App.tag(this), "TranslationVariations: исключение при парсинге JSON. " +
+                        "Варианты перевода не инициализированы", e);
+            }
         }
+        return mapValue;
     }
 
     public String getJson() {
         return jsonData;
     }
 
-    private void buildFromJson(String json) throws JSONException {
-        JSONObject jObject = new JSONObject(json);
+    private void initMapValue() throws JSONException {
+        Log.d(App.tag(this), "initMapValue: " + jsonData);
+        JSONObject jObject = new JSONObject(jsonData);
         JSONArray definitions = jObject.getJSONArray("def");
         for (int i = 0; i < definitions.length(); i++) {
             JSONObject definition = definitions.getJSONObject(i);
             String text = definition.getString("text");
             JSONArray translations = definition.getJSONArray("tr");
-            LinkedHashMap<String, String> translationStrings = new LinkedHashMap<>();
+            Map<String, String> translationStrings = new LinkedHashMap<>();
             for (int j = 0; j < translations.length(); j++) {
                 JSONObject translation = translations.getJSONObject(j);
                 String translationString = translation.getString("text");
@@ -62,20 +75,16 @@ public class TranslationVariations {
                 }
                 translationStrings.put(translationString, meaning);
             }
-            dictPage.put(text, translationStrings);
+            mapValue.put(text, translationStrings);
         }
     }
 
-    public LinkedHashMap<String, LinkedHashMap<String, String>> getMap() {
-        return dictPage;
-    }
-
     public boolean isEmpty() {
-        return dictPage.isEmpty();
+        return getAsMap().isEmpty();
     }
 
     @Override
     public String toString() {
-        return dictPage.toString();
+        return getAsMap().toString();
     }
 }
