@@ -9,14 +9,21 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
+import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
 
 
 public class TranslationVariationsView extends ScrollView {
+    // значения отступов в пикселях
+    private static final int FIRST_LEVEL_MARGIN = getDimen(R.dimen.first_level_text_margin);
+    private static final int SECOND_LEVEL_MARGIN = getDimen(R.dimen.second_level_text_margin);
+    // размер текста в sp
+    private static final int FIRST_LEVEL_TEXT_SIZE = 24;
+    private static final int SECOND_LEVEL_TEXT_SIZE = 20;
+    private static final int THIRD_LEVEL_TEXT_SIZE = 18;
 
     public TranslationVariationsView(Context context, TranslationVariations variations) {
         super(context);
@@ -34,22 +41,13 @@ public class TranslationVariationsView extends ScrollView {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // устанавливаем отступы
-        int marginStartFirstLevel = 13;
-        int marginStartSecondLevel = marginStartFirstLevel * 2;
-        marginStartFirstLevel = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, marginStartFirstLevel, getResources()
-                        .getDisplayMetrics());
-        marginStartSecondLevel = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, marginStartSecondLevel, getResources()
-                        .getDisplayMetrics());
+        paramsFirstLevel.setMarginStart(FIRST_LEVEL_MARGIN);
+        paramsSecondLevel.setMarginStart(SECOND_LEVEL_MARGIN);
 
-        paramsFirstLevel.setMarginStart(marginStartFirstLevel);
-        paramsSecondLevel.setMarginStart(marginStartSecondLevel);
-
-        LinkedHashMap<String, LinkedHashMap<String, String>> vMap = variations.getMap();
+        Map<String, Map<String, String>> vMap = variations.getAsMap();
         for (String variation : vMap.keySet()) {
             TextView variationView = new TextView(context);
-            variationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            variationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FIRST_LEVEL_TEXT_SIZE);
             variationView.setText(variation);
             variationView.setLayoutParams(paramsFirstLevel);
             variationsContainer.addView(variationView);
@@ -60,8 +58,8 @@ public class TranslationVariationsView extends ScrollView {
                 meaningView.setText(translationMeaning.getValue());
                 translationView.setLayoutParams(paramsSecondLevel);
                 meaningView.setLayoutParams(paramsSecondLevel);
-                translationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                translationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
+                meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, THIRD_LEVEL_TEXT_SIZE);
                 meaningView.setTypeface(null, Typeface.ITALIC);
                 int secondaryTextColor = ContextCompat.getColor(context, R.color.colorTextSecondary);
                 meaningView.setTextColor(secondaryTextColor);
@@ -70,5 +68,14 @@ public class TranslationVariationsView extends ScrollView {
             }
         }
         this.addView(variationsContainer);
+    }
+
+    /**
+     * Возвращает значение отступа в пикселях
+     * @param resourceId id ресурса отступа
+     * @return значение отступа
+     */
+    private static int getDimen(int resourceId) {
+        return (int) (App.getInstance().getResources().getDimension(resourceId));
     }
 }
