@@ -35,7 +35,6 @@ public class TranslationVariations {
             try {
                 initMapValue();
             } catch (JSONException e) {
-                mapValue = new LinkedHashMap<>();
                 Log.e(App.tag(this), "TranslationVariations: исключение при парсинге JSON. " +
                         "Варианты перевода не инициализированы", e);
             }
@@ -48,6 +47,7 @@ public class TranslationVariations {
     }
 
     private void initMapValue() throws JSONException {
+        mapValue = new LinkedHashMap<>();
         Log.d(App.tag(this), "initMapValue: " + jsonData);
         JSONObject jObject = new JSONObject(jsonData);
         JSONArray definitions = jObject.getJSONArray("def");
