@@ -19,20 +19,6 @@
         android:theme="@style/favoriteCheckboxStyle" />
 
     <TextView
-        android:id="@+id/list_translation_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/list_term_label"
-        android:layout_toRightOf="@+id/favorite_checkbox"
-        android:layout_toEndOf="@+id/favorite_checkbox"
-        android:text="Term"
-        android:textColor="@color/colorTextSecondary" />
-
-    <TextView
         android:id="@+id/list_term_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,8 +29,27 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/favorite_checkbox"
         android:layout_toEndOf="@+id/favorite_checkbox"
-        android:text="Translation"
+        android:text="Term"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/colorTextPrimary"
         android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/list_translation_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/list_term_label"
+        android:layout_toRightOf="@+id/favorite_checkbox"
+        android:layout_toEndOf="@+id/favorite_checkbox"
+        android:text="Translation"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/colorTextSecondary"
+        android:textSize="14sp" />
 
 </RelativeLayout>
