@@ -41,7 +41,7 @@ public class TranslateFragment extends Fragment {
 
     private boolean textBeingEdited = false;
     private boolean translationTaskCompleted = false;
-    private Translation lastTranslationResult;
+    private Translation currentVisibleTranslation;
 
 
     @Override
@@ -69,22 +69,43 @@ public class TranslateFragment extends Fragment {
     }
 
     private void initFragment() {
-        int source = SpHelper.getSourceLangId();
-        int target = SpHelper.getTargetLangId();
-        sourceLangLabel.setText(getString(source));
-        targetLangLabel.setText(getString(target));
-        SpHelper.saveSourceTargetLangIds(source, target);
+        String source = SpHelper.getSourceLangCode();
+        String target = SpHelper.getTargetLangCode();
+        setLanguages(source, target);
         dbManager = new DbManager(App.getInstance());
+        if (currentVisibleTranslation != null) {
+            renderTranslation(currentVisibleTranslation);
+        }
+    }
+
+    private void setLanguages(String source, String target) {
+        String sourceName = getResources().getString(langCodeToResourceId.get(source));
+        String targetName = getResources().getString(langCodeToResourceId.get(target));
+        sourceLangLabel.setText(sourceName);
+        targetLangLabel.setText(targetName);
+        SpHelper.saveSourceTargetLangs(source, target);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            Log.d(App.tag(this), "onHiddenChanged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
+            if (currentVisibleTranslation != null) {
+                setLanguages(currentVisibleTranslation.getTermLang(), currentVisibleTranslation.getTranslationLang());
+                this.translateInput.setText(currentVisibleTranslation.getTerm());
+                renderTranslation(currentVisibleTranslation);
+            }
+        }
     }
 
     private View.OnClickListener changeLangButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            int source = SpHelper.getSourceLangId();
-            int target = SpHelper.getTargetLangId();
-            sourceLangLabel.setText(getString(target));
-            targetLangLabel.setText(getString(source));
-            SpHelper.saveSourceTargetLangIds(target, source);
+            // меняем местами source и target
+            String source = SpHelper.getTargetLangCode();
+            String target = SpHelper.getSourceLangCode();
+            setLanguages(source, target);
             Log.d(App.tag(this), "Changed language");
         }
     };
@@ -94,7 +115,7 @@ public class TranslateFragment extends Fragment {
         public void onFocusChange(View view, boolean hasFocus) {
             if (!hasFocus) {
                 // говорим, что пользователь закончил ввод
-                // это значит, что можно сохранять перевод в кэш
+                // это значит, что можно сохранять перевод в историю
                 textBeingEdited = false;
                 notifyTranslationResultStateChanged();
             }
@@ -117,14 +138,15 @@ public class TranslateFragment extends Fragment {
     };
 
     private void notifyTranslationResultStateChanged() {
+        if (currentVisibleTranslation == null ||
+                currentVisibleTranslation.getTranslation() == null) return;
         if (!textBeingEdited && translationTaskCompleted &&
-                !lastTranslationResult.getTerm().trim().equals("")) {
+                !currentVisibleTranslation.getTranslation().trim().equals("")) {
             dbManager.open();
-            dbManager.saveTranslation(lastTranslationResult, DbHelper.HISTORY_TABLE);
+            dbManager.saveTranslation(currentVisibleTranslation, DbHelper.HISTORY_TABLE);
             dbManager.close();
         }
     }
-
 
     private class TranslationTask extends AsyncTask<Object, String, Translation> {
         private String textToTranslate;
@@ -140,20 +162,23 @@ public class TranslateFragment extends Fragment {
         @Override
         protected Translation doInBackground(Object... params) {
             Log.d(App.tag(this), "TranslationTask started");
+            String source = SpHelper.getSourceLangCode();
+            String target = SpHelper.getTargetLangCode();
             textToTranslate = (String) params[0];
             translationRequest = new TranslationRequest();
             variationsRequest = new TranslationVariationsRequest();
-            String result = translationRequest.getTranslation(getTranslationDirectionCodes(), textToTranslate);
-            TranslationVariations variations = variationsRequest.getVariations(getTranslationDirectionCodes(), textToTranslate);
-            return new Translation(textToTranslate, result, variations);
+            String result = translationRequest.getTranslation(source + "-" + target, textToTranslate);
+            TranslationVariations variations = variationsRequest.getVariations(source + "-" + target, textToTranslate);
+            return new Translation(source, target, textToTranslate, result, variations);
         }
 
         @Override
         protected void onPostExecute(Translation result) {
+            Log.d(App.tag(this), "TranslationTask finished.");
             if (result != null) {
                 renderTranslation(result);
                 translationTaskCompleted = true;
-                lastTranslationResult = result;
+                currentVisibleTranslation = result;
                 notifyTranslationResultStateChanged();
             } else {
                 Toast.makeText(TranslateFragment.this.getContext(), "Не получилось перевести", Toast.LENGTH_SHORT).show();
@@ -171,8 +196,6 @@ public class TranslateFragment extends Fragment {
     }
 
     private void renderTranslation(Translation translation) {
-        Log.d(App.tag(this), "TranslationTask finished.");
-
         translationResultTextView.setText(translation.getTranslation());
         Log.d(App.tag(this), translation + " => " + translation.getTranslation());
         if (translation.getVariations() != null) {
@@ -191,15 +214,12 @@ public class TranslateFragment extends Fragment {
         rootLayout.addView(variationsView);
     }
 
-    private String getTranslationDirectionCodes() {
-        String source = langResourceIdToLangCode.get(SpHelper.getSourceLangId());
-        String target = langResourceIdToLangCode.get(SpHelper.getTargetLangId());
-        Log.d(App.tag(this), "getTranslationDirectionCodes: source " + source + " target " + target);
-        return source + "-" + target;
-    }
-
-    private Map<Integer, String> langResourceIdToLangCode = new HashMap<Integer, String>() {{
-        put(R.string.russian, "ru");
-        put(R.string.english, "en");
+    public final Map<String, Integer> langCodeToResourceId = new HashMap<String, Integer>() {{
+        put("ru", R.string.russian);
+        put("en", R.string.english);
     }};
+
+    public void setVisibleTranslation(Translation translation) {
+        currentVisibleTranslation = translation;
+    }
 }

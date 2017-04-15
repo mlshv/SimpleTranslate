@@ -1,6 +1,7 @@
 package me.mlshv.simpletranslate.ui.fragments;
 
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbHelper;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
+import me.mlshv.simpletranslate.ui.activities.MainActivity;
 import me.mlshv.simpletranslate.util.CursorRecyclerViewAdapter;
 
 public class HistoryFragment extends Fragment {
@@ -47,8 +49,7 @@ public class HistoryFragment extends Fragment {
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             Translation translation = Translation.fromCursor(cursor);
             Log.d(TAG, "onBindViewHolder: loaded translation: " + translation.toString());
-            viewHolder.termLabel.setText(translation.getTerm());
-            viewHolder.translationLabel.setText(translation.getTranslation());
+            viewHolder.setItem(translation);
         }
 
         @Override
@@ -63,12 +64,29 @@ public class HistoryFragment extends Fragment {
             super.changeCursor(cursor);
         }
 
-        class ViewHolder extends RecyclerView.ViewHolder {
-            TextView termLabel, translationLabel;
+        class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            private Translation item;
+            private TextView termLabel, translationLabel;
+
             ViewHolder(View itemView) {
                 super(itemView);
                 termLabel = (TextView) itemView.findViewById(R.id.list_term_label);
                 translationLabel = (TextView) itemView.findViewById(R.id.list_translation_label);
+                itemView.setOnClickListener(this);
+                termLabel.setOnClickListener(this);
+                translationLabel.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick " + getAdapterPosition() + " " + item.toString());
+                ((MainActivity) getActivity()).goToTranslationFragmentAndShowTranslation(item);
+            }
+
+            void setItem(Translation item) {
+                this.item = item;
+                termLabel.setText(item.getTerm());
+                translationLabel.setText(item.getTranslation());
             }
         }
     }

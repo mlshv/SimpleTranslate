@@ -15,18 +15,24 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Колонки таблиц
     public static final String _ID = "_id";
+    public static final String SOURCE_LANG = "source_lang";
+    public static final String TRANSLATION_LANG = "translation_lang";
     public static final String SOURCE_STRING = "word";
     public static final String TRANSLATION = "translation";
     public static final String VARIATIONS = "variations";
 
     private static final String CREATE_HISTORY_TABLE = "create table " + HISTORY_TABLE + "("
             + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + SOURCE_LANG + " TEXT, "
+            + TRANSLATION_LANG + " TEXT, "
             + SOURCE_STRING + " TEXT NOT NULL UNIQUE, "
             + TRANSLATION + " TEXT, "
             + VARIATIONS + " TEXT);";
 
     private static final String CREATE_FAVORITES_TABLE = "create table " + FAVORITES_TABLE + "("
             + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + SOURCE_LANG + " TEXT, "
+            + TRANSLATION_LANG + " TEXT, "
             + SOURCE_STRING + " TEXT NOT NULL UNIQUE, "
             + TRANSLATION + " TEXT, "
             + VARIATIONS + " TEXT);";
@@ -37,7 +43,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_FAVORITES_TABLE);
     }
 
-    public DbHelper(Context context) {
+    DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

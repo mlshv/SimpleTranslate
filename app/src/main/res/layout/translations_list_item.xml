@@ -6,7 +6,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_padding"
-    android:clickable="true">
+    android:clickable="true"
+    android:background="?attr/selectableItemBackground">
 
     <CheckBox
         android:id="@+id/favorite_checkbox"

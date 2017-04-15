@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 
 import me.mlshv.simpletranslate.R;
+import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.fragments.FavoritesHistoryContainerFragment;
 import me.mlshv.simpletranslate.ui.fragments.SettingsFragment;
 import me.mlshv.simpletranslate.ui.fragments.TranslateFragment;
@@ -18,6 +19,7 @@ public class MainActivity extends FragmentActivity {
     private FavoritesHistoryContainerFragment favoritesHistoryContainerFragment;
     private SettingsFragment settingsFragment;
     private Fragment currentFragment;
+    private BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,9 @@ public class MainActivity extends FragmentActivity {
     };
 
     private void initBottomNavigation() {
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
     }
 
     private void initFragments() {
@@ -81,5 +84,11 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed() {
         super.onBackPressed();
         this.finish();
+    }
+
+    public void goToTranslationFragmentAndShowTranslation(Translation translation) {
+        translateFragment.setVisibleTranslation(translation);
+        goToFragment(translateFragment);
+        navigation.getMenu().getItem(0).setChecked(true);
     }
 }

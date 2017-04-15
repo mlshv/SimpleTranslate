@@ -4,22 +4,21 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import me.mlshv.simpletranslate.App;
-import me.mlshv.simpletranslate.R;
 
 public class SpHelper {
     private static SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
-    public static int getSourceLangId() {
-        return preferences.getInt("SourceLang", R.string.russian);
+    public static String getSourceLangCode() {
+        return preferences.getString("SourceLang", "ru");
     }
 
-    public static int getTargetLangId() {
-        return preferences.getInt("TargetLang", R.string.english);
+    public static String getTargetLangCode() {
+        return preferences.getString("TargetLang", "en");
     }
 
-    public static void saveSourceTargetLangIds(int source, int target) {
+    public static void saveSourceTargetLangs(String source, String target) {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("SourceLang", source);
-        editor.putInt("TargetLang", target);
+        editor.putString("SourceLang", source);
+        editor.putString("TargetLang", target);
         editor.apply();
     }
 }

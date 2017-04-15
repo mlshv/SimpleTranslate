@@ -28,20 +28,18 @@ public class DbManager {
     }
 
     public Cursor fetchTable(String tableName) {
-        String[] columns = new String[] { DbHelper._ID, DbHelper.SOURCE_STRING, DbHelper.TRANSLATION, DbHelper.VARIATIONS };
+        String[] columns = new String[] {
+                DbHelper._ID,
+                DbHelper.SOURCE_LANG,
+                DbHelper.TRANSLATION_LANG,
+                DbHelper.SOURCE_STRING,
+                DbHelper.TRANSLATION,
+                DbHelper.VARIATIONS };
         Cursor cursor = database.query(tableName, columns, null, null, null, null, DbHelper._ID + " DESC"); // сортировка по убыванию id
         if (cursor != null) {
             cursor.moveToFirst();
         }
         return cursor;
-    }
-
-    public int updateHistory(String sourceString, String translation, String variations) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbHelper.SOURCE_STRING, sourceString);
-        contentValues.put(DbHelper.TRANSLATION, translation);
-        contentValues.put(DbHelper.VARIATIONS, variations);
-        return database.update(DbHelper.HISTORY_TABLE, contentValues, DbHelper.SOURCE_STRING + " = " + sourceString, null);
     }
 
     public void clearHistory() {
@@ -50,6 +48,8 @@ public class DbManager {
 
     public void saveTranslation(Translation translation, String table) {
         ContentValues contentValue = new ContentValues();
+        contentValue.put(DbHelper.SOURCE_LANG, translation.getTermLang());
+        contentValue.put(DbHelper.TRANSLATION_LANG, translation.getTranslationLang());
         contentValue.put(DbHelper.SOURCE_STRING, translation.getTerm());
         contentValue.put(DbHelper.TRANSLATION, translation.getTranslation());
         if (translation.getVariations() != null) {
