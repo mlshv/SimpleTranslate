@@ -27,11 +27,12 @@ public class TranslationVariationsView extends ScrollView {
 
     public TranslationVariationsView(Context context, TranslationVariations variations) {
         super(context);
-        initView(context, variations);
+        initView(variations);
+        this.setBackgroundColor(ContextCompat.getColor(context, R.color.colorBackground));
     }
 
-    private void initView(Context context, TranslationVariations variations) {
-        LinearLayout variationsContainer = new LinearLayout(context);
+    private void initView(TranslationVariations variations) {
+        LinearLayout variationsContainer = new LinearLayout(getContext());
         variationsContainer.setOrientation(LinearLayout.VERTICAL);
 
         // параметры для текстовых view
@@ -46,14 +47,14 @@ public class TranslationVariationsView extends ScrollView {
 
         Map<String, Map<String, String>> vMap = variations.getAsMap();
         for (String variation : vMap.keySet()) {
-            TextView variationView = new TextView(context);
+            TextView variationView = new TextView(getContext());
             variationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FIRST_LEVEL_TEXT_SIZE);
             variationView.setText(variation);
             variationView.setLayoutParams(paramsFirstLevel);
             variationsContainer.addView(variationView);
             for (Map.Entry<String, String> translationMeaning : vMap.get(variation).entrySet()) {
-                TextView translationView = new TextView(context);
-                TextView meaningView = new TextView(context);
+                TextView translationView = new TextView(getContext());
+                TextView meaningView = new TextView(getContext());
                 translationView.setText(translationMeaning.getKey());
                 meaningView.setText(translationMeaning.getValue());
                 translationView.setLayoutParams(paramsSecondLevel);
@@ -61,7 +62,7 @@ public class TranslationVariationsView extends ScrollView {
                 translationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
                 meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, THIRD_LEVEL_TEXT_SIZE);
                 meaningView.setTypeface(null, Typeface.ITALIC);
-                int secondaryTextColor = ContextCompat.getColor(context, R.color.colorTextSecondary);
+                int secondaryTextColor = ContextCompat.getColor(getContext(), R.color.colorTextSecondary);
                 meaningView.setTextColor(secondaryTextColor);
                 variationsContainer.addView(translationView);
                 variationsContainer.addView(meaningView);

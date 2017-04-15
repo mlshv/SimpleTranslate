@@ -54,25 +54,33 @@ public class TranslationVariations {
         for (int i = 0; i < definitions.length(); i++) {
             JSONObject definition = definitions.getJSONObject(i);
             String text = definition.getString("text");
+            text += ", " + definition.getString("pos");
             JSONArray translations = definition.getJSONArray("tr");
             Map<String, String> translationStrings = new LinkedHashMap<>();
             for (int j = 0; j < translations.length(); j++) {
                 JSONObject translation = translations.getJSONObject(j);
                 String translationString = translation.getString("text");
-                // берём первое значение переведённого слова, чтобы не наставить лишних запятых
-                String meaning = translation.getJSONArray("mean").getJSONObject(0).getString("text");
-
                 try {
                     JSONArray synonyms = translation.getJSONArray("syn");
                     for (int k = 0; k < synonyms.length(); k++) {
                         translationString += ", " + synonyms.getJSONObject(k).getString("text");
                     }
-                } catch (JSONException ignored) {} // синонимов нет, можно игнорировать
+                } catch (JSONException ignored) {
+                    Log.d(App.tag(this), "initMapValue: исключение в syn" + translation);
+                } // синонимов нет, это нормально, можно игнорировать
 
-                JSONArray meanings = translation.getJSONArray("mean");
-                for (int k = 1; k < meanings.length(); k++) {
-                    meaning += ", " + meanings.getJSONObject(k).getString("text");
-                }
+                String meaning = "";
+                try {
+                    // берём первое значение переведённого слова, чтобы не наставить лишних запятых
+                    meaning = translation.getJSONArray("mean").getJSONObject(0).getString("text");
+                    JSONArray meanings = translation.getJSONArray("mean");
+                    for (int k = 1; k < meanings.length(); k++) {
+                        meaning += ", " + meanings.getJSONObject(k).getString("text");
+                    }
+
+                } catch (JSONException ignored) {
+                    Log.d(App.tag(this), "initMapValue: исключение в mean" + translation);
+                } // часто у объекта перевода нет поля mean, это нормально, пропускаем
                 translationStrings.put(translationString, meaning);
             }
             mapValue.put(text, translationStrings);

@@ -5,6 +5,7 @@
     <color name="colorAccent">#a3a3a3</color>
     <color name="colorTextPrimary">#333</color>
     <color name="colorTextSecondary">#555</color>
+    <color name="colorBackground">#fff</color>
 
     <color name="favoriteCheckboxChecked">#f4e542</color>
     <color name="favoriteCheckboxUnchecked">#444</color>
