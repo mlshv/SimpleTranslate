@@ -36,10 +36,6 @@ public class Translation {
 
     @Override
     public String toString() {
-        return "Translation{" +
-                "term='" + term + '\'' +
-                ", translation='" + translation + '\'' +
-                ", variations=" + variations +
-                '}';
+        return "Translation { " + term + " => " + translation + " }";
     }
 }
