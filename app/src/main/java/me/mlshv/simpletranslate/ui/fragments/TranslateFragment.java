@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +62,7 @@ public class TranslateFragment extends Fragment {
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
         translateInput = (EditText) view.findViewById(R.id.translate_input);
         translateInput.addTextChangedListener(translateInputWatcher);
-        translateInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
+        translateInput.setOnEditorActionListener(translateInputDoneButtonListener);
         // ставим кнопку "готово" на клаве вместо кнопки новой строки
         translateInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         translateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
@@ -110,15 +111,16 @@ public class TranslateFragment extends Fragment {
         }
     };
 
-    private View.OnFocusChangeListener translateInputOnFocusChangeListener = new View.OnFocusChangeListener() {
+    private EditText.OnEditorActionListener translateInputDoneButtonListener =
+            new TextView.OnEditorActionListener() {
         @Override
-        public void onFocusChange(View view, boolean hasFocus) {
-            if (!hasFocus) {
-                // говорим, что пользователь закончил ввод
-                // это значит, что можно сохранять перевод в историю
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                Log.d(App.tag(this), "onEditorAction: ввод закончен");
                 textBeingEdited = false;
                 notifyTranslationResultStateChanged();
             }
+            return false;
         }
     };
 
@@ -127,6 +129,7 @@ public class TranslateFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             // отменяем предыдущий перевод-таск, если есть, и запускаем новый
+            Log.d(App.tag(this), "onTextChanged: пользователь вводит текст");
             if (translationTask != null) translationTask.cancel(false);
             translationTask = new TranslationTask();
             translationTask.execute(translateInput.getText().toString());
