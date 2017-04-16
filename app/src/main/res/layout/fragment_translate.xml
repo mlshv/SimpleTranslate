@@ -30,7 +30,6 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/change_language_button"
             android:layout_toStartOf="@+id/change_language_button"
             android:layout_alignParentBottom="true" />
 
@@ -58,12 +57,11 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/change_language_button"
             android:layout_toEndOf="@+id/change_language_button"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
-    <EditText
+    <me.mlshv.simpletranslate.ui.views.TranslateInput
         android:id="@+id/translate_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,7 +70,6 @@
         android:lines="6"
         android:scrollHorizontally="false"
         android:layout_below="@+id/relativeLayout"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -82,9 +79,7 @@
         android:text="Hello"
         android:textSize="24sp"
         android:layout_below="@+id/translate_input"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="@dimen/first_level_text_margin"
         android:layout_marginStart="@dimen/first_level_text_margin" />
 
 </RelativeLayout>

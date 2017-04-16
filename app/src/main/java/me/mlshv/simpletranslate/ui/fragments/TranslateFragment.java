@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
@@ -29,6 +30,7 @@ import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
 import me.mlshv.simpletranslate.network.TranslationRequest;
 import me.mlshv.simpletranslate.network.TranslationVariationsRequest;
+import me.mlshv.simpletranslate.ui.views.TranslateInput;
 import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.SpHelper;
 
@@ -36,7 +38,7 @@ public class TranslateFragment extends Fragment {
     private RelativeLayout rootLayout;
     private TextView sourceLangLabel;
     private TextView targetLangLabel;
-    private EditText translateInput;
+    private TranslateInput translateInput;
     private TextView translationResultTextView;
     private DbManager dbManager;
 
@@ -60,9 +62,16 @@ public class TranslateFragment extends Fragment {
         rootLayout = (RelativeLayout) view.findViewById(R.id.root);
         sourceLangLabel = (TextView) view.findViewById(R.id.source_lang);
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
-        translateInput = (EditText) view.findViewById(R.id.translate_input);
+        translateInput = (TranslateInput) view.findViewById(R.id.translate_input);
         translateInput.addTextChangedListener(translateInputWatcher);
+        translateInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
         translateInput.setOnEditorActionListener(translateInputDoneButtonListener);
+        translateInput.setOnBackButtonPressListener(new Callable<Void>() {
+            @Override public Void call() throws Exception {
+                TranslateFragment.this.notifyTranslationResultStateChanged();
+                return null;
+            }
+        });
         // ставим кнопку "готово" на клаве вместо кнопки новой строки
         translateInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         translateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
@@ -108,6 +117,18 @@ public class TranslateFragment extends Fragment {
             String target = SpHelper.getSourceLangCode();
             setLanguages(source, target);
             Log.d(App.tag(this), "Changed language");
+        }
+    };
+
+    private View.OnFocusChangeListener translateInputOnFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            if (!hasFocus) {
+                // говорим, что пользователь закончил ввод
+                // это значит, что можно сохранять перевод в историю
+                textBeingEdited = false;
+                notifyTranslationResultStateChanged();
+            }
         }
     };
 
@@ -200,7 +221,7 @@ public class TranslateFragment extends Fragment {
 
     private void renderTranslation(Translation translation) {
         translationResultTextView.setText(translation.getTranslation());
-        Log.d(App.tag(this), translation + " => " + translation.getTranslation());
+        Log.d(App.tag(this), translation.toString());
         if (translation.getVariations() != null) {
             Log.d(App.tag(this), "Variations: " + translation.getVariations().toString());
         }

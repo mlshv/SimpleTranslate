@@ -65,9 +65,7 @@ public class TranslationVariations {
                     for (int k = 0; k < synonyms.length(); k++) {
                         translationString += ", " + synonyms.getJSONObject(k).getString("text");
                     }
-                } catch (JSONException ignored) {
-                    Log.d(App.tag(this), "initMapValue: исключение в syn" + translation);
-                } // синонимов нет, это нормально, можно игнорировать
+                } catch (JSONException ignored) {} // синонимов нет, это нормально, можно игнорировать
 
                 String meaning = "";
                 try {
@@ -78,9 +76,7 @@ public class TranslationVariations {
                         meaning += ", " + meanings.getJSONObject(k).getString("text");
                     }
 
-                } catch (JSONException ignored) {
-                    Log.d(App.tag(this), "initMapValue: исключение в mean" + translation);
-                } // часто у объекта перевода нет поля mean, это нормально, пропускаем
+                } catch (JSONException ignored) {} // часто у объекта перевода нет поля mean, это нормально, пропускаем
                 translationStrings.put(translationString, meaning);
             }
             mapValue.put(text, translationStrings);

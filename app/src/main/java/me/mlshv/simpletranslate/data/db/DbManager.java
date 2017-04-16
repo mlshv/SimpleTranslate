@@ -5,7 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.data.model.Translation;
 
 public class DbManager {
@@ -47,6 +49,7 @@ public class DbManager {
     }
 
     public void saveTranslation(Translation translation, String table) {
+        Log.d(App.tag(this), "saveTranslation: сохраняю перевод " + translation);
         ContentValues contentValue = new ContentValues();
         contentValue.put(DbHelper.SOURCE_LANG, translation.getTermLang());
         contentValue.put(DbHelper.TRANSLATION_LANG, translation.getTranslationLang());
