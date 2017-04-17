@@ -52,4 +52,17 @@ public class Translation {
     public String toString() {
         return "Translation { " + term + " => " + translation + " }";
     }
+
+    @Override
+    public int hashCode() {
+        return term.hashCode() * 13 + translation.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Translation t = (Translation) o;
+        return this.term.equals(t.getTerm()) && this.translation.equals(t.getTranslation());
+    }
 }
