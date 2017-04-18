@@ -15,8 +15,6 @@ import java.util.List;
 import me.mlshv.simpletranslate.R;
 
 public class FavoritesHistoryContainerFragment extends Fragment {
-
-    private static final String TAG = "FavoritesHistoryContainerFragment";
     private HistoryFragment historyFragment = new HistoryFragment();
     private FavoritesFragment favoritesFragment = new FavoritesFragment();
 

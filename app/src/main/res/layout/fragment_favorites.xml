@@ -7,9 +7,8 @@
     android:background="?android:colorBackground"
     tools:context=".ui.fragments.FavoritesFragment">
 
-    <TextView
-        android:id="@+id/textView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/favorites_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Избранное" />
+        android:layout_height="match_parent" />
 </LinearLayout>

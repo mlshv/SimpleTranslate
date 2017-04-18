@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_padding"
     android:clickable="true"
+    android:focusable="true"
     android:background="?attr/selectableItemBackground">
 
     <CheckBox
@@ -17,6 +18,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         style="?android:attr/starStyle"
+        android:clickable="true"
         android:theme="@style/favoriteCheckboxStyle" />
 
     <TextView

@@ -62,6 +62,10 @@ public class DbManager {
         database.insert(table, null, contentValue);
     }
 
+    public void removeTranslation(Translation item, String table) {
+        deleteRowsWhereSourceStringIs(item.getTerm(), table);
+    }
+
     private void deleteRowsWhereSourceStringIs(String sourceString, String table) {
         String whereClause = DbHelper.SOURCE_STRING + "=?";
         String[] whereArgs = new String[] { sourceString };
