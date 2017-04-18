@@ -7,6 +7,15 @@
     android:background="?android:colorBackground"
     tools:context=".ui.fragments.HistoryFragment">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:title="@string/title_history" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/history_list"
         android:layout_width="match_parent"

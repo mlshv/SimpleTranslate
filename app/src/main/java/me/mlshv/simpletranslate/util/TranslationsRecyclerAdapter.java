@@ -12,12 +12,15 @@ import android.widget.TextView;
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.model.Translation;
+import me.mlshv.simpletranslate.ui.activities.MainActivity;
 
 
 public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<TranslationsRecyclerAdapter.ViewHolder> {
+    private MainActivity mainActivity;
 
-    public TranslationsRecyclerAdapter(Cursor cursor) {
+    public TranslationsRecyclerAdapter(Cursor cursor, MainActivity mainActivity) {
         super(cursor);
+        this.mainActivity = mainActivity;
     }
 
     @Override
@@ -49,12 +52,14 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
             termLabel = (TextView) itemView.findViewById(R.id.list_term_label);
             translationLabel = (TextView) itemView.findViewById(R.id.list_translation_label);
             favoriteCheckbox = (CheckBox) itemView.findViewById(R.id.favorite_checkbox);
+            //favoriteCheckbox.setOnCheckedChangeListener();
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             Log.d(App.tag(this), "onClick " + getAdapterPosition() + " " + item.toString());
+            mainActivity.goToTranslationFragmentAndShowTranslation(item);
         }
 
         void setItem(Translation item) {

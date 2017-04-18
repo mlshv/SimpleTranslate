@@ -7,6 +7,15 @@
     android:background="?android:colorBackground"
     tools:context=".ui.fragments.FavoritesFragment">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:title="@string/title_favorites" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/favorites_list"
         android:layout_width="match_parent"
