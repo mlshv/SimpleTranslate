@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.data.db.DbHelper;
 import me.mlshv.simpletranslate.data.db.DbManager;
+import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
 import me.mlshv.simpletranslate.util.TranslationsRecyclerAdapter;
 
@@ -34,7 +34,7 @@ public class FavoritesFragment extends Fragment {
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
         favoritesList.setAdapter(new TranslationsRecyclerAdapter(
-                        dbManager.fetchTable(DbHelper.FAVORITES_TABLE),
+                        dbManager.fetchFavorites(),
                         ((MainActivity) this.getActivity())));
     }
 
@@ -46,7 +46,7 @@ public class FavoritesFragment extends Fragment {
             if (favoritesList != null) {
                 dbManager.open();
                 ((TranslationsRecyclerAdapter) favoritesList.getAdapter())
-                        .changeCursor(dbManager.fetchTable(DbHelper.FAVORITES_TABLE));
+                        .changeCursor(dbManager.fetchFavorites());
                 favoritesList.getAdapter().notifyDataSetChanged();
             }
         }

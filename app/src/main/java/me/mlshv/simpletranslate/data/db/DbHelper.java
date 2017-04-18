@@ -10,37 +10,29 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     // Таблицы для истории и избранного
-    public static final String HISTORY_TABLE = "history";
-    public static final String FAVORITES_TABLE = "favorites";
+    public static final String TRANSLATIONS_TABLE = "translations";
 
     // Колонки таблиц
     public static final String _ID = "_id";
     public static final String SOURCE_LANG = "source_lang";
     public static final String TRANSLATION_LANG = "translation_lang";
-    public static final String SOURCE_STRING = "word";
+    public static final String TERM = "word";
     public static final String TRANSLATION = "translation";
+    public static final String SAVED_STATE = "saved_state";
     public static final String VARIATIONS = "variations";
 
-    private static final String CREATE_HISTORY_TABLE = "create table " + HISTORY_TABLE + "("
+    private static final String CREATE_TRANSLATIONS_TABLE = "create table " + TRANSLATIONS_TABLE + "("
             + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + SOURCE_LANG + " TEXT, "
             + TRANSLATION_LANG + " TEXT, "
-            + SOURCE_STRING + " TEXT NOT NULL UNIQUE, "
+            + TERM + " TEXT NOT NULL UNIQUE, "
             + TRANSLATION + " TEXT, "
-            + VARIATIONS + " TEXT);";
-
-    private static final String CREATE_FAVORITES_TABLE = "create table " + FAVORITES_TABLE + "("
-            + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + SOURCE_LANG + " TEXT, "
-            + TRANSLATION_LANG + " TEXT, "
-            + SOURCE_STRING + " TEXT NOT NULL UNIQUE, "
-            + TRANSLATION + " TEXT, "
+            + SAVED_STATE + " INTEGER, "
             + VARIATIONS + " TEXT);";
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(CREATE_HISTORY_TABLE);
-        sqLiteDatabase.execSQL(CREATE_FAVORITES_TABLE);
+        sqLiteDatabase.execSQL(CREATE_TRANSLATIONS_TABLE);
     }
 
     DbHelper(Context context) {
@@ -49,8 +41,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + HISTORY_TABLE);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FAVORITES_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TRANSLATIONS_TABLE);
         onCreate(sqLiteDatabase);
     }
 }

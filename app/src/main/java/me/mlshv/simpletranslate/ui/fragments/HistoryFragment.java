@@ -13,6 +13,7 @@ import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbHelper;
 import me.mlshv.simpletranslate.data.db.DbManager;
+import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
 import me.mlshv.simpletranslate.util.TranslationsRecyclerAdapter;
 
@@ -34,7 +35,7 @@ public class HistoryFragment extends Fragment {
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
         historyList.setAdapter(new TranslationsRecyclerAdapter(
-                        dbManager.fetchTable(DbHelper.HISTORY_TABLE),
+                        dbManager.fetchHistory(),
                         ((MainActivity) this.getActivity())));
     }
 
@@ -46,7 +47,7 @@ public class HistoryFragment extends Fragment {
             if (historyList != null) {
                 dbManager.open();
                 ((TranslationsRecyclerAdapter) historyList.getAdapter())
-                        .changeCursor(dbManager.fetchTable(DbHelper.HISTORY_TABLE));
+                        .changeCursor(dbManager.fetchHistory());
                 historyList.getAdapter().notifyDataSetChanged();
             }
         }

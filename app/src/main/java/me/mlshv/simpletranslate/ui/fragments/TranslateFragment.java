@@ -24,7 +24,6 @@ import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.data.db.DbHelper;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
@@ -166,9 +165,8 @@ public class TranslateFragment extends Fragment {
                 currentVisibleTranslation.getTranslation() == null) return;
         if (!textBeingEdited && translationTaskCompleted &&
                 !currentVisibleTranslation.getTranslation().trim().equals("")) {
-            dbManager.open();
-            dbManager.saveTranslation(currentVisibleTranslation, DbHelper.HISTORY_TABLE);
-            dbManager.close();
+            currentVisibleTranslation.setSavedState(Translation.SAVED_HISTORY);
+            dbManager.saveTranslation(currentVisibleTranslation);
         }
     }
 
@@ -186,14 +184,18 @@ public class TranslateFragment extends Fragment {
         @Override
         protected Translation doInBackground(Object... params) {
             Log.d(App.tag(this), "TranslationTask started");
+            textToTranslate = (String) params[0];
+            Translation t = dbManager.tryGetFromCache(textToTranslate);
+            if (t != null) return t;
             String source = SpHelper.getSourceLangCode();
             String target = SpHelper.getTargetLangCode();
-            textToTranslate = (String) params[0];
             translationRequest = new TranslationRequest();
             variationsRequest = new TranslationVariationsRequest();
             String result = translationRequest.getTranslation(source + "-" + target, textToTranslate);
             TranslationVariations variations = variationsRequest.getVariations(source + "-" + target, textToTranslate);
-            return new Translation(source, target, textToTranslate, result, variations);
+            t = new Translation(source, target, textToTranslate, result, variations);
+            dbManager.saveTranslation(t);
+            return t;
         }
 
         @Override
@@ -245,5 +247,17 @@ public class TranslateFragment extends Fragment {
 
     public void setVisibleTranslation(Translation translation) {
         currentVisibleTranslation = translation;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        dbManager.open();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dbManager.close();
     }
 }
