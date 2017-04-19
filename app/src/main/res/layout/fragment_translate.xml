@@ -24,11 +24,9 @@
             android:gravity="center"
             android:text="source"
             android:textAlignment="center"
-            android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:textSize="20sp"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/change_language_button"
             android:layout_alignParentBottom="true" />
@@ -36,11 +34,11 @@
         <Button
             android:id="@+id/change_language_button"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+            android:layout_width="47dp"
             android:padding="0dp"
             android:layout_height="match_parent"
             android:text="⇆"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true" />
@@ -52,10 +50,8 @@
             android:gravity="center"
             android:text="target"
             android:textAlignment="center"
-            android:textAllCaps="true"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:textSize="20sp"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/change_language_button"
             android:layout_alignParentBottom="true" />

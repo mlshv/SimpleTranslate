@@ -52,10 +52,10 @@ public class TranslateFragment extends Fragment {
     private CheckBox favoriteCheckbox;
     private Button copyButton;
 
+    private TranslationTask translationTask;
     private boolean textBeingEdited = false;
     private boolean translationTaskCompleted = false;
     private Translation currentVisibleTranslation;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -155,7 +155,7 @@ public class TranslateFragment extends Fragment {
             String source = SpHelper.getTargetLangCode();
             String target = SpHelper.getSourceLangCode();
             setLanguages(source, target);
-            Log.d(App.tag(this), "Changed language");
+            performTranslationTask();
         }
     };
 
@@ -185,20 +185,23 @@ public class TranslateFragment extends Fragment {
     };
 
     private TextWatcher translateInputWatcher = new TextWatcher() {
-        private TranslationTask translationTask;
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // отменяем предыдущий перевод-таск, если есть, и запускаем новый
             Log.d(App.tag(this), "onTextChanged: пользователь вводит текст");
-            if (translationTask != null) translationTask.cancel(false);
-            translationTask = new TranslationTask();
-            translationTask.execute(textInput.getText().toString());
+            performTranslationTask();
             textBeingEdited = true;
         }
 
         @Override public void afterTextChanged(Editable s) {}
         @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
     };
+
+    private void performTranslationTask() {
+        // отменяем предыдущий перевод-таск, если есть, и запускаем новый
+        if (translationTask != null) translationTask.cancel(false);
+        translationTask = new TranslationTask();
+        translationTask.execute(textInput.getText().toString());
+    }
 
     private void notifyTranslationResultStateChanged() {
         if (currentVisibleTranslation == null ||

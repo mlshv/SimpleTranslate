@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import me.mlshv.simpletranslate.R;
@@ -15,7 +15,7 @@ import me.mlshv.simpletranslate.ui.fragments.SettingsFragment;
 import me.mlshv.simpletranslate.ui.fragments.TranslateFragment;
 import me.mlshv.simpletranslate.util.BottomNavigationViewHelper;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     private TranslateFragment translateFragment;
     private HistoryFragment historyFragment;
