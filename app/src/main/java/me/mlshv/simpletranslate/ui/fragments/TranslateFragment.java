@@ -1,5 +1,8 @@
 package me.mlshv.simpletranslate.ui.fragments;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -75,6 +78,13 @@ public class TranslateFragment extends Fragment {
         translateInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         translateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
         translationResultTextView = (TextView) view.findViewById(R.id.translation_result_text);
+        translationResultTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clipboardCopy(((TextView) view).getText().toString());
+                showToast("Перевод скопирован в буфер обмена");
+            }
+        });
     }
 
     private void initFragment() {
@@ -165,8 +175,8 @@ public class TranslateFragment extends Fragment {
                 currentVisibleTranslation.getTranslation() == null) return;
         if (!textBeingEdited && translationTaskCompleted &&
                 !currentVisibleTranslation.getTranslation().trim().equals("")) {
-            currentVisibleTranslation.setSavedState(Translation.SAVED_HISTORY);
-            dbManager.saveTranslation(currentVisibleTranslation);
+            currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
+            dbManager.updateOrInsertTranslation(currentVisibleTranslation);
         }
     }
 
@@ -186,7 +196,10 @@ public class TranslateFragment extends Fragment {
             Log.d(App.tag(this), "TranslationTask started");
             textToTranslate = (String) params[0];
             Translation t = dbManager.tryGetFromCache(textToTranslate);
-            if (t != null) return t;
+            if (t != null) {
+                Log.d(App.tag(this), "Достал из кэша " + t);
+                return t;
+            }
             String source = SpHelper.getSourceLangCode();
             String target = SpHelper.getTargetLangCode();
             translationRequest = new TranslationRequest();
@@ -194,7 +207,7 @@ public class TranslateFragment extends Fragment {
             String result = translationRequest.getTranslation(source + "-" + target, textToTranslate);
             TranslationVariations variations = variationsRequest.getVariations(source + "-" + target, textToTranslate);
             t = new Translation(source, target, textToTranslate, result, variations);
-            dbManager.saveTranslation(t);
+            dbManager.updateOrInsertTranslation(t);
             return t;
         }
 
@@ -207,7 +220,7 @@ public class TranslateFragment extends Fragment {
                 currentVisibleTranslation = result;
                 notifyTranslationResultStateChanged();
             } else {
-                Toast.makeText(TranslateFragment.this.getContext(), "Не получилось перевести", Toast.LENGTH_SHORT).show();
+                showToast("Не получилось перевести");
             }
         }
 
@@ -259,5 +272,15 @@ public class TranslateFragment extends Fragment {
     public void onPause() {
         super.onPause();
         dbManager.close();
+    }
+
+    private void clipboardCopy(String string) {
+        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(string, string);
+        clipboard.setPrimaryClip(clip);
+    }
+
+    private void showToast(String string) {
+        Toast.makeText(TranslateFragment.this.getContext(), string, Toast.LENGTH_SHORT).show();
     }
 }

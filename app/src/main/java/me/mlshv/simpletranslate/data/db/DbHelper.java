@@ -18,7 +18,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String TRANSLATION_LANG = "translation_lang";
     public static final String TERM = "word";
     public static final String TRANSLATION = "translation";
-    public static final String SAVED_STATE = "saved_state";
+    public static final String STORE_OPTIONS = "store_options"; // битовая маска. Описание в Translation.java
     public static final String VARIATIONS = "variations";
 
     private static final String CREATE_TRANSLATIONS_TABLE = "create table " + TRANSLATIONS_TABLE + "("
@@ -27,7 +27,7 @@ public class DbHelper extends SQLiteOpenHelper {
             + TRANSLATION_LANG + " TEXT, "
             + TERM + " TEXT NOT NULL UNIQUE, "
             + TRANSLATION + " TEXT, "
-            + SAVED_STATE + " INTEGER, "
+            + STORE_OPTIONS + " INTEGER, "
             + VARIATIONS + " TEXT);";
 
     @Override

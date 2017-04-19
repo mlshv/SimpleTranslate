@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.data.db.DbHelper;
 import me.mlshv.simpletranslate.data.db.DbManager;
-import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
 import me.mlshv.simpletranslate.util.TranslationsRecyclerAdapter;
 
@@ -50,12 +48,8 @@ public class HistoryFragment extends Fragment {
                         .changeCursor(dbManager.fetchHistory());
                 historyList.getAdapter().notifyDataSetChanged();
             }
+        } else {
+            dbManager.close();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dbManager.close();
     }
 }

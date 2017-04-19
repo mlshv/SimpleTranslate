@@ -31,16 +31,13 @@ public class DbManager {
     }
 
     public Cursor fetchHistory() {
-        String selection = DbHelper.SAVED_STATE + "=? OR " + DbHelper.SAVED_STATE + "=?";
-        String[] selectionArgs = new String[] {
-                String.valueOf(Translation.SAVED_HISTORY),
-                String.valueOf(Translation.SAVED_HISTORY_FAVORITES)
-        };
+        String selection = DbHelper.STORE_OPTIONS + " & ? != 0";
+        String[] selectionArgs = new String[] { String.valueOf(Translation.SAVED_HISTORY) };
         return fetchWhere(selection, selectionArgs);
     }
 
     public Cursor fetchFavorites() {
-        String selection = DbHelper.SAVED_STATE + "=?";
+        String selection = DbHelper.STORE_OPTIONS + " & ? != 0";
         String[] selectionArgs = new String[] { String.valueOf(Translation.SAVED_FAVORITES) };
         return fetchWhere(selection, selectionArgs);
     }
@@ -61,7 +58,7 @@ public class DbManager {
                 DbHelper.TRANSLATION_LANG,
                 DbHelper.TERM,
                 DbHelper.TRANSLATION,
-                DbHelper.SAVED_STATE,
+                DbHelper.STORE_OPTIONS,
                 DbHelper.VARIATIONS };
         Cursor cursor = database.query(DbHelper.TRANSLATIONS_TABLE, columns, selection, selectionArgs, null, null, DbHelper._ID + " DESC"); // сортировка по убыванию id
         if (cursor != null) {
@@ -74,25 +71,33 @@ public class DbManager {
         database.delete(DbHelper.TRANSLATIONS_TABLE, null, null);
     }
 
-    public void saveTranslation(Translation translation) {
-        Log.d(App.tag(this), "saveTranslation: сохраняю перевод " + translation);
-        ContentValues contentValue = new ContentValues();
-        contentValue.put(DbHelper.SOURCE_LANG, translation.getTermLang());
-        contentValue.put(DbHelper.TRANSLATION_LANG, translation.getTranslationLang());
-        contentValue.put(DbHelper.TERM, translation.getTerm());
-        contentValue.put(DbHelper.TRANSLATION, translation.getTranslation());
-        contentValue.put(DbHelper.SAVED_STATE, translation.getSavedState());
+    public void updateOrInsertTranslation(Translation translation) {
+        Translation existed = tryGetFromCache(translation.getTerm());
+        if (existed != null) {
+            translation.addStoreOption(existed.getStoreOptions());
+        }
+        insertTranslation(translation);
+    }
+
+    public void insertTranslation(Translation translation) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbHelper.SOURCE_LANG, translation.getTermLang());
+        contentValues.put(DbHelper.TRANSLATION_LANG, translation.getTranslationLang());
+        contentValues.put(DbHelper.TERM, translation.getTerm());
+        contentValues.put(DbHelper.TRANSLATION, translation.getTranslation());
+        contentValues.put(DbHelper.STORE_OPTIONS, translation.getStoreOptions());
         if (translation.getVariations() != null) {
-            contentValue.put(DbHelper.VARIATIONS, translation.getVariations().getJson());
+            contentValues.put(DbHelper.VARIATIONS, translation.getVariations().getJson());
         }
         deleteTranslation(translation);
-        database.insert(DbHelper.TRANSLATIONS_TABLE, null, contentValue);
+        Log.d(App.tag(this), "insertTranslation: сохраняю перевод " + translation);
+        database.insert(DbHelper.TRANSLATIONS_TABLE, null, contentValues);
     }
 
     public void deleteTranslation(Translation translation) {
         Log.d(App.tag(this), "deleteTranslation: удаляю перевод " + translation);
-        String whereClause = DbHelper.TERM + "=? AND " + DbHelper.TRANSLATION + "=?";
-        String[] whereArgs = new String[] { translation.getTerm(), translation.getTranslation() };
+        String whereClause = DbHelper.TERM + "=?";
+        String[] whereArgs = new String[] { translation.getTerm() };
         database.delete(DbHelper.TRANSLATIONS_TABLE, whereClause, whereArgs);
     }
 }

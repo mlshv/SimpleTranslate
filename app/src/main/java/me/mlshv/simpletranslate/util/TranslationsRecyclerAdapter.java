@@ -7,10 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
+import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
 
@@ -52,7 +54,7 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
             termLabel = (TextView) itemView.findViewById(R.id.list_term_label);
             translationLabel = (TextView) itemView.findViewById(R.id.list_translation_label);
             favoriteCheckbox = (CheckBox) itemView.findViewById(R.id.favorite_checkbox);
-            //favoriteCheckbox.setOnCheckedChangeListener();
+            favoriteCheckbox.setOnCheckedChangeListener(favoriteCheckListener);
             itemView.setOnClickListener(this);
         }
 
@@ -66,6 +68,29 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
             this.item = item;
             termLabel.setText(item.getTerm());
             translationLabel.setText(item.getTranslation());
+            favoriteCheckbox.setOnCheckedChangeListener(null); // убираем listener, чтобы он не вызывался при отрисовке
+            if (item.hasOption(Translation.SAVED_FAVORITES)) {
+                favoriteCheckbox.setChecked(true);
+            } else {
+                favoriteCheckbox.setChecked(false);
+            }
+            favoriteCheckbox.setOnCheckedChangeListener(favoriteCheckListener);
         }
+
+        private CompoundButton.OnCheckedChangeListener favoriteCheckListener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                Log.d(App.tag(this), "onCheckedChanged на " + isChecked);
+                Translation t = ViewHolder.this.item;
+                if (isChecked) {
+                    t.addStoreOption(Translation.SAVED_FAVORITES);
+                } else {
+                    t.removeStoreOption(Translation.SAVED_FAVORITES);
+                }
+                DbManager dbManager = new DbManager(App.getInstance()).open();
+                dbManager.insertTranslation(t);
+                dbManager.close();
+            }
+        };
     }
 }
