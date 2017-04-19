@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -41,10 +44,13 @@ public class TranslateFragment extends Fragment {
     private RelativeLayout rootLayout;
     private TextView sourceLangLabel;
     private TextView targetLangLabel;
-    private TranslateInput translateInput;
-    private ProgressBar translationProgress;
+    private TranslateInput textInput;
     private TextView translationResultTextView;
     private DbManager dbManager;
+
+    private ProgressBar translationProgress;
+    private CheckBox favoriteCheckbox;
+    private Button copyButton;
 
     private boolean textBeingEdited = false;
     private boolean translationTaskCompleted = false;
@@ -66,26 +72,47 @@ public class TranslateFragment extends Fragment {
         rootLayout = (RelativeLayout) view.findViewById(R.id.root);
         sourceLangLabel = (TextView) view.findViewById(R.id.source_lang);
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
-        translateInput = (TranslateInput) view.findViewById(R.id.translate_input);
-        translateInput.addTextChangedListener(translateInputWatcher);
-        translateInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
-        translateInput.setOnEditorActionListener(translateInputDoneButtonListener);
-        translateInput.setOnBackButtonPressListener(new Callable<Void>() {
+        textInput = (TranslateInput) view.findViewById(R.id.translate_input);
+        textInput.addTextChangedListener(translateInputWatcher);
+        textInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
+        textInput.setOnEditorActionListener(translateInputDoneButtonListener);
+        textInput.setOnBackButtonPressListener(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 TranslateFragment.this.notifyTranslationResultStateChanged();
                 return null;
             }
         });
         // ставим кнопку "готово" на клаве вместо кнопки новой строки
-        translateInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        translateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        translationProgress = (ProgressBar) view.findViewById(R.id.translation_progress);
+        textInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        textInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
         translationResultTextView = (TextView) view.findViewById(R.id.translation_result_text);
-        translationResultTextView.setOnClickListener(new View.OnClickListener() {
+        translationResultTextView.setMovementMethod(new ScrollingMovementMethod());
+        translationProgress = (ProgressBar) view.findViewById(R.id.translation_progress);
+        favoriteCheckbox = (CheckBox) view.findViewById(R.id.favorite_checkbox);
+        favoriteCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    currentVisibleTranslation.addStoreOption(Translation.SAVED_FAVORITES);
+                } else {
+                    currentVisibleTranslation.removeStoreOption(Translation.SAVED_FAVORITES);
+                }
+                dbManager.insertTranslation(currentVisibleTranslation);
+            }
+        });
+        copyButton = (Button) view.findViewById(R.id.translation_copy_button);
+        copyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clipboardCopy(((TextView) view).getText().toString());
-                showToast("Перевод скопирован в буфер обмена");
+                clipboardCopy(translationResultTextView.getText().toString());
+                showToast("Перевод скопирован");
+            }
+        });
+        Button translationClearButton = (Button) view.findViewById(R.id.input_clear_button);
+        translationClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textInput.setText("");
             }
         });
     }
@@ -115,7 +142,7 @@ public class TranslateFragment extends Fragment {
             Log.d(App.tag(this), "onHiddenChanged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
             if (currentVisibleTranslation != null) {
                 setLanguages(currentVisibleTranslation.getTermLang(), currentVisibleTranslation.getTranslationLang());
-                this.translateInput.setText(currentVisibleTranslation.getTerm());
+                this.textInput.setText(currentVisibleTranslation.getTerm());
                 renderTranslation(currentVisibleTranslation);
             }
         }
@@ -165,7 +192,7 @@ public class TranslateFragment extends Fragment {
             Log.d(App.tag(this), "onTextChanged: пользователь вводит текст");
             if (translationTask != null) translationTask.cancel(false);
             translationTask = new TranslationTask();
-            translationTask.execute(translateInput.getText().toString());
+            translationTask.execute(textInput.getText().toString());
             textBeingEdited = true;
         }
 
@@ -177,7 +204,8 @@ public class TranslateFragment extends Fragment {
         if (currentVisibleTranslation == null ||
                 currentVisibleTranslation.getTranslation() == null) return;
         if (!textBeingEdited && translationTaskCompleted &&
-                !currentVisibleTranslation.getTranslation().trim().equals("")) {
+                !currentVisibleTranslation.getTranslation().trim().equals("")
+                && !currentVisibleTranslation.getTerm().equals(currentVisibleTranslation.getTranslation())) {
             currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
             dbManager.updateOrInsertTranslation(currentVisibleTranslation);
         }
@@ -192,7 +220,14 @@ public class TranslateFragment extends Fragment {
         protected void onPreExecute() {
             Log.d(App.tag(this), "Запускаю TranslationTask");
             translationTaskCompleted = false;
-            translationProgress.setVisibility(View.VISIBLE);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    translationProgress.setVisibility(View.VISIBLE);
+                    favoriteCheckbox.setVisibility(View.INVISIBLE);
+                    copyButton.setVisibility(View.INVISIBLE);
+                }
+            });
         }
 
         @Override
@@ -239,23 +274,30 @@ public class TranslateFragment extends Fragment {
         }
     }
 
-    private void renderTranslation(Translation translation) {
+    private void renderTranslation(final Translation translation) {
         translationResultTextView.setText(translation.getTranslation());
-        Log.d(App.tag(this), translation.toString());
         if (translation.getVariations() != null) {
             Log.d(App.tag(this), "Варианты: " + translation.getVariations().toString());
+
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.BELOW, R.id.translation_result_text);
+            params.addRule(RelativeLayout.START_OF, R.id.translate_button_bar);
+            TranslationVariationsView variationsView =
+                    new TranslationVariationsView(this.getActivity(), translation.getVariations());
+            variationsView.setLayoutParams(params);
+
+            rootLayout.addView(variationsView);
         }
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        params.addRule(RelativeLayout.BELOW, R.id.translation_result_text);
-        TranslationVariationsView variationsView =
-                new TranslationVariationsView(this.getActivity(), translation.getVariations());
-        variationsView.setLayoutParams(params);
-
-        rootLayout.addView(variationsView);
+        if (!translation.getTerm().isEmpty()) {
+            // показываем кнопки
+            copyButton.setVisibility(View.VISIBLE);
+            favoriteCheckbox.setVisibility(View.VISIBLE);
+            favoriteCheckbox.setChecked(translation.hasOption(Translation.SAVED_FAVORITES));
+        }
     }
 
     public final Map<String, Integer> langCodeToResourceId = new HashMap<String, Integer>() {{
@@ -265,6 +307,16 @@ public class TranslateFragment extends Fragment {
 
     public void setVisibleTranslation(Translation translation) {
         currentVisibleTranslation = translation;
+    }
+
+    private void clipboardCopy(String string) {
+        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(string, string);
+        clipboard.setPrimaryClip(clip);
+    }
+
+    private void showToast(String string) {
+        Toast.makeText(TranslateFragment.this.getContext(), string, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -277,15 +329,5 @@ public class TranslateFragment extends Fragment {
     public void onPause() {
         super.onPause();
         dbManager.close();
-    }
-
-    private void clipboardCopy(String string) {
-        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(string, string);
-        clipboard.setPrimaryClip(clip);
-    }
-
-    private void showToast(String string) {
-        Toast.makeText(TranslateFragment.this.getContext(), string, Toast.LENGTH_SHORT).show();
     }
 }
