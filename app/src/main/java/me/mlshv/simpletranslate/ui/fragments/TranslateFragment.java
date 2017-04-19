@@ -326,11 +326,21 @@ public class TranslateFragment extends Fragment {
     public void onResume() {
         super.onResume();
         dbManager.open();
+        textInput.clearFocus();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         dbManager.close();
+        if (translationTask != null)
+            translationTask.cancel(false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dbManager = null;
+        translationTask = null;
     }
 }

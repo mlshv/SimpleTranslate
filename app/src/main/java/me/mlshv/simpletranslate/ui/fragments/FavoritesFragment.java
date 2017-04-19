@@ -52,4 +52,11 @@ public class FavoritesFragment extends Fragment {
             dbManager.close();
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        favoritesList = null;
+        dbManager = null;
+    }
 }

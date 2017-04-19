@@ -52,4 +52,11 @@ public class HistoryFragment extends Fragment {
             dbManager.close();
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        historyList = null;
+        dbManager = null;
+    }
 }

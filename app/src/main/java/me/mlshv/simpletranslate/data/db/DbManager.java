@@ -61,7 +61,7 @@ public class DbManager {
                 DbHelper.TRANSLATION,
                 DbHelper.STORE_OPTIONS,
                 DbHelper.VARIATIONS };
-        if (database != null) {
+        if (database != null && database.isOpen()) {
             Cursor cursor = database.query(DbHelper.TRANSLATIONS_TABLE, columns, selection, selectionArgs, null, null, DbHelper._ID + " DESC"); // сортировка по убыванию id
             if (cursor != null) {
                 cursor.moveToFirst();
@@ -92,7 +92,7 @@ public class DbManager {
         }
         deleteTranslation(translation);
         Log.d(App.tag(this), "insertTranslation: сохраняю перевод " + translation);
-        if (database != null)
+        if (database != null && database.isOpen())
             database.insert(DbHelper.TRANSLATIONS_TABLE, null, contentValues);
     }
 
@@ -100,7 +100,7 @@ public class DbManager {
         Log.d(App.tag(this), "deleteTranslation: удаляю перевод " + translation);
         String whereClause = DbHelper.TERM + "=?";
         String[] whereArgs = new String[] { translation.getTerm() };
-        if (database != null)
+        if (database != null && database.isOpen())
             database.delete(DbHelper.TRANSLATIONS_TABLE, whereClause, whereArgs);
     }
 
