@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ public class TranslateFragment extends Fragment {
     private TextView sourceLangLabel;
     private TextView targetLangLabel;
     private TranslateInput translateInput;
+    private ProgressBar translationProgress;
     private TextView translationResultTextView;
     private DbManager dbManager;
 
@@ -77,6 +79,7 @@ public class TranslateFragment extends Fragment {
         // ставим кнопку "готово" на клаве вместо кнопки новой строки
         translateInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         translateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        translationProgress = (ProgressBar) view.findViewById(R.id.translation_progress);
         translationResultTextView = (TextView) view.findViewById(R.id.translation_result_text);
         translationResultTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,13 +190,14 @@ public class TranslateFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            Log.d(App.tag(this), "Starting TranslationTask");
+            Log.d(App.tag(this), "Запускаю TranslationTask");
             translationTaskCompleted = false;
+            translationProgress.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected Translation doInBackground(Object... params) {
-            Log.d(App.tag(this), "TranslationTask started");
+            Log.d(App.tag(this), "TranslationTask запущена");
             textToTranslate = (String) params[0];
             Translation t = dbManager.tryGetFromCache(textToTranslate);
             if (t != null) {
@@ -213,7 +217,8 @@ public class TranslateFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Translation result) {
-            Log.d(App.tag(this), "TranslationTask finished.");
+            Log.d(App.tag(this), "TranslationTask завершена");
+            translationProgress.setVisibility(View.GONE);
             if (result != null) {
                 renderTranslation(result);
                 translationTaskCompleted = true;
@@ -238,7 +243,7 @@ public class TranslateFragment extends Fragment {
         translationResultTextView.setText(translation.getTranslation());
         Log.d(App.tag(this), translation.toString());
         if (translation.getVariations() != null) {
-            Log.d(App.tag(this), "Variations: " + translation.getVariations().toString());
+            Log.d(App.tag(this), "Варианты: " + translation.getVariations().toString());
         }
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
