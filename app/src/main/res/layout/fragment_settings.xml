@@ -22,8 +22,57 @@
             android:textSize="20sp" />
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/clear_cache"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Settings" />
+        android:layout_height="?attr/actionBarSize"
+        android:padding="@dimen/first_level_text_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Очистить кэш"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clear_history"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:padding="@dimen/first_level_text_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Очистить историю"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clear_favorites"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:padding="@dimen/first_level_text_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Очистить избранное"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"/>
+    </LinearLayout>
 </LinearLayout>

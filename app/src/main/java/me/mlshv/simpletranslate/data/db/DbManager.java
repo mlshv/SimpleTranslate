@@ -47,10 +47,11 @@ public class DbManager {
         String selection = DbHelper.TERM + "=?";
         String[] selectionArgs = new String[] { term };
         Cursor c = fetchWhere(selection, selectionArgs);
-        if (c.getCount() == 0) return null;
+        if (c == null || c.getCount() == 0) return null;
         return Translation.fromCursor(c);
     }
 
+    @Nullable
     private Cursor fetchWhere(String selection, String[] selectionArgs) {
         String[] columns = new String[] {
                 DbHelper._ID,
@@ -60,15 +61,15 @@ public class DbManager {
                 DbHelper.TRANSLATION,
                 DbHelper.STORE_OPTIONS,
                 DbHelper.VARIATIONS };
-        Cursor cursor = database.query(DbHelper.TRANSLATIONS_TABLE, columns, selection, selectionArgs, null, null, DbHelper._ID + " DESC"); // сортировка по убыванию id
-        if (cursor != null) {
-            cursor.moveToFirst();
+        if (database != null) {
+            Cursor cursor = database.query(DbHelper.TRANSLATIONS_TABLE, columns, selection, selectionArgs, null, null, DbHelper._ID + " DESC"); // сортировка по убыванию id
+            if (cursor != null) {
+                cursor.moveToFirst();
+            }
+            return cursor;
         }
-        return cursor;
-    }
 
-    public void clearTranslations() {
-        database.delete(DbHelper.TRANSLATIONS_TABLE, null, null);
+        return null;
     }
 
     public void updateOrInsertTranslation(Translation translation) {
@@ -91,13 +92,36 @@ public class DbManager {
         }
         deleteTranslation(translation);
         Log.d(App.tag(this), "insertTranslation: сохраняю перевод " + translation);
-        database.insert(DbHelper.TRANSLATIONS_TABLE, null, contentValues);
+        if (database != null)
+            database.insert(DbHelper.TRANSLATIONS_TABLE, null, contentValues);
     }
 
     public void deleteTranslation(Translation translation) {
         Log.d(App.tag(this), "deleteTranslation: удаляю перевод " + translation);
         String whereClause = DbHelper.TERM + "=?";
         String[] whereArgs = new String[] { translation.getTerm() };
+        if (database != null)
+            database.delete(DbHelper.TRANSLATIONS_TABLE, whereClause, whereArgs);
+    }
+
+    public void clearCache() {
+        String whereClause = DbHelper.STORE_OPTIONS + "=?";
+        String[] whereArgs = new String[] {String.valueOf(Translation.SAVED_CACHE)};
         database.delete(DbHelper.TRANSLATIONS_TABLE, whereClause, whereArgs);
+    }
+
+    public void clearHistory() {
+        removeStoreOptionEverywhere(Translation.SAVED_HISTORY);
+    }
+
+    public void clearFavorites() {
+        removeStoreOptionEverywhere(Translation.SAVED_FAVORITES);
+    }
+
+    private void removeStoreOptionEverywhere(int storeOption) {
+        database.execSQL("UPDATE " + DbHelper.TRANSLATIONS_TABLE +
+                " SET " + DbHelper.STORE_OPTIONS + " = " +
+                DbHelper.STORE_OPTIONS + " & ~" + storeOption +
+                " WHERE " + DbHelper.STORE_OPTIONS + " & " + storeOption + " != 0");
     }
 }
