@@ -26,7 +26,7 @@
         android:id="@+id/clear_cache"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:padding="@dimen/first_level_text_margin"
+        android:padding="@dimen/first_level_margin"
         android:clickable="true"
         android:focusable="true"
         android:background="?attr/selectableItemBackground">
@@ -44,7 +44,7 @@
         android:id="@+id/clear_history"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:padding="@dimen/first_level_text_margin"
+        android:padding="@dimen/first_level_margin"
         android:clickable="true"
         android:focusable="true"
         android:background="?attr/selectableItemBackground">
@@ -62,7 +62,7 @@
         android:id="@+id/clear_favorites"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:padding="@dimen/first_level_text_margin"
+        android:padding="@dimen/first_level_margin"
         android:clickable="true"
         android:focusable="true"
         android:background="?attr/selectableItemBackground">

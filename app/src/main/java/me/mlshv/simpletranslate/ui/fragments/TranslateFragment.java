@@ -9,7 +9,9 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,13 +44,13 @@ import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.SpHelper;
 
 public class TranslateFragment extends Fragment {
-    private RelativeLayout rootLayout;
     private TextView sourceLangLabel;
     private TextView targetLangLabel;
     private TranslateInput textInput;
     private TextView translationResultTextView;
     private DbManager dbManager;
 
+    private LinearLayout variationsContainer;
     private ProgressBar translationProgress;
     private CheckBox favoriteCheckbox;
     private Button copyButton;
@@ -62,14 +65,15 @@ public class TranslateFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
         initView(view);
-        initFragment();
+        initFragment(savedInstanceState);
+        setRetainInstance(true);
         return view;
     }
 
     private void initView(View view) {
         Button changeLangButton = (Button) view.findViewById(R.id.change_language_button);
         changeLangButton.setOnClickListener(changeLangButtonOnClickListener);
-        rootLayout = (RelativeLayout) view.findViewById(R.id.root);
+        variationsContainer = (LinearLayout) view.findViewById(R.id.variations_container);
         sourceLangLabel = (TextView) view.findViewById(R.id.source_lang);
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
         textInput = (TranslateInput) view.findViewById(R.id.translate_input);
@@ -82,8 +86,8 @@ public class TranslateFragment extends Fragment {
                 return null;
             }
         });
-        // ставим кнопку "готово" на клаве вместо кнопки новой строки
-        textInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        // ставим кнопку "готово" на клаве вместо кнопки новой строки и делаем её не fullscreen, убираем подсказки
+        textInput.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         textInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
         translationResultTextView = (TextView) view.findViewById(R.id.translation_result_text);
         translationResultTextView.setMovementMethod(new ScrollingMovementMethod());
@@ -117,14 +121,29 @@ public class TranslateFragment extends Fragment {
         });
     }
 
-    private void initFragment() {
+    private void initFragment(Bundle savedInstanceState) {
         String source = SpHelper.getSourceLangCode();
         String target = SpHelper.getTargetLangCode();
         setLanguages(source, target);
         dbManager = new DbManager(App.getInstance());
+        dbManager.open();
+        textInput.clearFocus();
+        if (savedInstanceState != null) {
+            currentVisibleTranslation =
+                dbManager.tryGetFromCache(savedInstanceState.getString("SOURCE_STRING"));
+        }
+
         if (currentVisibleTranslation != null) {
+            textInput.setText(currentVisibleTranslation.getTerm());
             renderTranslation(currentVisibleTranslation);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (currentVisibleTranslation != null)
+            outState.putString("SOURCE_STRING", currentVisibleTranslation.getTerm());
     }
 
     private void setLanguages(String source, String target) {
@@ -210,7 +229,8 @@ public class TranslateFragment extends Fragment {
                 !currentVisibleTranslation.getTranslation().trim().equals("")
                 && !currentVisibleTranslation.getTerm().equals(currentVisibleTranslation.getTranslation())) {
             currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
-            dbManager.updateOrInsertTranslation(currentVisibleTranslation);
+            if (dbManager != null)
+                dbManager.updateOrInsertTranslation(currentVisibleTranslation);
         }
     }
 
@@ -278,25 +298,27 @@ public class TranslateFragment extends Fragment {
     }
 
     private void renderTranslation(final Translation translation) {
-        translationResultTextView.setText(translation.getTranslation());
+        translationResultTextView.setText(
+                String.format("%s\n%s",
+                        translation.getTranslation(),
+                        getResources().getString(R.string.translate_disclaimer)));
+        translationResultTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
         if (translation.getVariations() != null) {
             Log.d(App.tag(this), "Варианты: " + translation.getVariations().toString());
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            params.addRule(RelativeLayout.BELOW, R.id.translation_result_text);
-            params.addRule(RelativeLayout.START_OF, R.id.translate_button_bar);
             TranslationVariationsView variationsView =
                     new TranslationVariationsView(this.getActivity(), translation.getVariations());
             variationsView.setLayoutParams(params);
 
-            rootLayout.addView(variationsView);
+            variationsContainer.removeAllViews();
+            variationsContainer.addView(variationsView);
         }
 
         if (!translation.getTerm().isEmpty()) {
-            // показываем кнопки
+            // показываем кнопки "Избранное" и "Скопировать"
             copyButton.setVisibility(View.VISIBLE);
             favoriteCheckbox.setVisibility(View.VISIBLE);
             favoriteCheckbox.setChecked(translation.hasOption(Translation.SAVED_FAVORITES));
@@ -320,13 +342,6 @@ public class TranslateFragment extends Fragment {
 
     private void showToast(String string) {
         Toast.makeText(TranslateFragment.this.getContext(), string, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        dbManager.open();
-        textInput.clearFocus();
     }
 
     @Override

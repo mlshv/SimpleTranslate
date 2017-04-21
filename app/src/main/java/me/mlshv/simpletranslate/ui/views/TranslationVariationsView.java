@@ -3,6 +3,7 @@ package me.mlshv.simpletranslate.ui.views;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -18,7 +19,7 @@ import me.mlshv.simpletranslate.data.model.TranslationVariations;
 
 public class TranslationVariationsView extends ScrollView {
     // значения отступов в пикселях
-    private static final int FIRST_LEVEL_MARGIN = getDimen(R.dimen.first_level_text_margin);
+    private static final int FIRST_LEVEL_MARGIN = getDimen(R.dimen.first_level_margin);
     private static final int SECOND_LEVEL_MARGIN = getDimen(R.dimen.second_level_text_margin);
     // размер текста в sp
     private static final int FIRST_LEVEL_TEXT_SIZE = 24;
@@ -78,7 +79,20 @@ public class TranslationVariationsView extends ScrollView {
      * @param resourceId id ресурса отступа
      * @return значение отступа
      */
+
     private static int getDimen(int resourceId) {
         return (int) (App.getInstance().getResources().getDimension(resourceId));
+    }
+
+    public TranslationVariationsView(Context context) {
+        super(context);
+    }
+
+    public TranslationVariationsView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public TranslationVariationsView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 }
