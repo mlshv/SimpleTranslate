@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -40,7 +41,7 @@ import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.LangUtil;
 import me.mlshv.simpletranslate.util.SpHelper;
 
-public class TranslateFragment extends Fragment implements PageableFragment {
+public class TranslateFragment extends Fragment {
     private TextView sourceLangLabel;
     private TextView targetLangLabel;
     private TranslateInput textInput;
@@ -53,12 +54,10 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     private Button copyButton;
 
     private TranslationTask translationTask;
-    private boolean textBeingEdited = false;
-    private boolean translationTaskCompleted = false;
     private Translation currentVisibleTranslation;
 
-    private static final int CHANGE_SOURCE_LANG = 0;
-    private static final int CHANGE_TARGET_LANG = 1;
+    private static final int REQUEST_CHANGE_SOURCE_LANG = 0;
+    private static final int REQUEST_CHANGE_TARGET_LANG = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,10 +66,6 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         initUi(view);
         initListeners(view);
 
-        String source = SpHelper.loadSourceLangCode();
-        String target = SpHelper.loadTargetLangCode();
-        setSourceLangCode(source);
-        setTargetLangCode(target);
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
 
@@ -97,13 +92,13 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         sourceLangLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chooseLanguage(CHANGE_SOURCE_LANG);
+                chooseLanguage(REQUEST_CHANGE_SOURCE_LANG);
             }
         });
         targetLangLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chooseLanguage(CHANGE_TARGET_LANG);
+                chooseLanguage(REQUEST_CHANGE_TARGET_LANG);
             }
         });
         textInput.addTextChangedListener(translateInputWatcher);
@@ -111,7 +106,7 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         textInput.setOnEditorActionListener(translateInputDoneButtonListener);
         textInput.setOnBackButtonPressListener(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                TranslateFragment.this.notifyTranslationResultStateChanged();
+                TranslateFragment.this.saveTranslationToHistory();
                 return null;
             }
         });
@@ -139,6 +134,7 @@ public class TranslateFragment extends Fragment implements PageableFragment {
             @Override
             public void onClick(View view) {
                 textInput.setText("");
+                SpHelper.saveCurrentTextToTranslate("");
             }
         });
     }
@@ -163,12 +159,13 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) return; // пользователь нажал кнопку "назад" при выборе языка, игнорим
         String langName = data.getStringExtra("language");
         switch (requestCode) {
-            case CHANGE_SOURCE_LANG:
+            case REQUEST_CHANGE_SOURCE_LANG:
                 setSourceLangCode(LangUtil.getCodeByName(langName));
                 break;
-            case CHANGE_TARGET_LANG:
+            case REQUEST_CHANGE_TARGET_LANG:
                 setTargetLangCode(LangUtil.getCodeByName(langName));
                 break;
         }
@@ -192,8 +189,7 @@ public class TranslateFragment extends Fragment implements PageableFragment {
             if (!hasFocus) {
                 // говорим, что пользователь закончил ввод
                 // это значит, что можно сохранять перевод в историю
-                textBeingEdited = false;
-                notifyTranslationResultStateChanged();
+                saveTranslationToHistory();
             }
         }
     };
@@ -204,8 +200,7 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 Log.d(App.tag(this), "onEditorAction: ввод закончен");
-                textBeingEdited = false;
-                notifyTranslationResultStateChanged();
+                saveTranslationToHistory();
             }
             return false;
         }
@@ -216,7 +211,6 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             Log.d(App.tag(this), "onTextChanged: пользователь вводит текст");
             performTranslationTask();
-            textBeingEdited = true;
         }
 
         @Override public void afterTextChanged(Editable s) {}
@@ -240,9 +234,8 @@ public class TranslateFragment extends Fragment implements PageableFragment {
             Translation result = translationTask.get();
             if (result != null) {
                 renderTranslation(result);
-                translationTaskCompleted = true;
                 currentVisibleTranslation = result;
-                notifyTranslationResultStateChanged();
+                saveTranslationToHistory();
             } else {
                 showToast("Не получилось перевести");
             }
@@ -250,19 +243,24 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         }
     };
 
-    private void notifyTranslationResultStateChanged() {
-        if (currentVisibleTranslation == null ||
-                currentVisibleTranslation.getTranslation() == null) return;
-        if (!textBeingEdited && translationTaskCompleted &&
-                !currentVisibleTranslation.getTranslation().trim().equals("")
-                && !currentVisibleTranslation.getTerm().equals(currentVisibleTranslation.getTranslation())) {
-            currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
-            if (dbManager != null)
-                dbManager.updateOrInsertTranslation(currentVisibleTranslation);
+    private void saveTranslationToHistory() {
+        if (currentVisibleTranslation == null || currentVisibleTranslation.getTranslation() == null) return;
+        Log.d(App.tag(this), "saveTranslationToHistory: translationTask.getStatus() == " + translationTask.getStatus());
+        if (!textInput.hasFocus() || translationTask.getStatus() == AsyncTask.Status.FINISHED) {
+            if (!currentVisibleTranslation.getTranslation().trim().isEmpty()
+                    && !currentVisibleTranslation.getTerm().equals(currentVisibleTranslation.getTranslation())) {
+                currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
+                if (dbManager != null) {
+                    Log.d(App.tag(this), "saveTranslationToHistory: обновляем translation " + currentVisibleTranslation);
+                    dbManager.updateOrInsertTranslation(currentVisibleTranslation);
+                    SpHelper.saveCurrentTextToTranslate(currentVisibleTranslation.getTerm());
+                }
+            }
         }
     }
 
     private void renderTranslation(final Translation translation) {
+        if (!isAdded()) return;
         translationResultTextView.setText(
                 String.format("%s\n%s",
                         translation.getTranslation(),
@@ -290,10 +288,6 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         }
     }
 
-    public void setVisibleTranslation(Translation translation) {
-        currentVisibleTranslation = translation;
-    }
-
     private void clipboardCopy(String string) {
         ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(string, string);
@@ -307,6 +301,12 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     @Override
     public void onResume() {
         super.onResume();
+        // обновляем направление перевода и ставим в поле ввода последний переводимый текст
+        String source = SpHelper.loadSourceLangCode();
+        String target = SpHelper.loadTargetLangCode();
+        setSourceLangCode(source);
+        setTargetLangCode(target);
+        textInput.setText(SpHelper.loadCurrentTextToTranslate());
         dbManager.open();
     }
 
@@ -323,16 +323,5 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         super.onDestroy();
         dbManager = null;
         translationTask = null;
-    }
-
-    @Override
-    public void notifyPaged() {
-        Log.d(App.tag(this), "notifyPaged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
-        if (currentVisibleTranslation != null) {
-            setSourceLangCode(currentVisibleTranslation.getSourceLangCode());
-            setTargetLangCode(currentVisibleTranslation.getTargetLangCode());
-            this.textInput.setText(currentVisibleTranslation.getTerm());
-            renderTranslation(currentVisibleTranslation);
-        }
     }
 }

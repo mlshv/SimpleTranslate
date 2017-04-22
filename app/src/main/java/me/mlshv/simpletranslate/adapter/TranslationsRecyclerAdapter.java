@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.util;
+package me.mlshv.simpletranslate.adapter;
 
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +15,7 @@ import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
+import me.mlshv.simpletranslate.util.SpHelper;
 
 
 public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<TranslationsRecyclerAdapter.ViewHolder> {
@@ -39,11 +40,6 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
         return new ViewHolder(itemView);
     }
 
-    @Override
-    public void changeCursor(Cursor cursor) {
-        super.changeCursor(cursor);
-    }
-
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Translation item;
         private TextView termLabel, translationLabel;
@@ -61,7 +57,10 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
         @Override
         public void onClick(View view) {
             Log.d(App.tag(this), "onClick " + getAdapterPosition() + " " + item.toString());
-            mainActivity.goToTranslationFragmentAndShowTranslation(item);
+            SpHelper.saveCurrentTextToTranslate(item.getTerm());
+            SpHelper.saveSourceLangCode(item.getSourceLangCode());
+            SpHelper.saveTargetLangCode(item.getTargetLangCode());
+            mainActivity.goToTranslationFragment();
         }
 
         void setItem(Translation item) {

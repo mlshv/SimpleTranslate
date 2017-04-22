@@ -6,4 +6,5 @@
     <string name="title_favorites">Избранное</string>
     <string name="title_settings">Настройки</string>
     <string name="translate_disclaimer">Переведено сервисом «Яндекс.Переводчик»</string>
+    <string name="please_wait_for_langs_to_load">Пожалуйста, дождитесь загрузки списка языков</string>
 </resources>

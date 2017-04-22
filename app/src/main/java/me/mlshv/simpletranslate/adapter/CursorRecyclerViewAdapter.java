@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.util;
+package me.mlshv.simpletranslate.adapter;
 
 /*
  * Copyright (C) 2014 skyfish.jy@gmail.com

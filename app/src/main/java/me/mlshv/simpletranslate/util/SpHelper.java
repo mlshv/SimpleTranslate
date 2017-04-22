@@ -33,4 +33,14 @@ public class SpHelper {
         editor.putString("TargetLang", code);
         editor.apply();
     }
+
+    public static void saveCurrentTextToTranslate(String text) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("TextToTranslate", text);
+        editor.apply();
+    }
+
+    public static String loadCurrentTextToTranslate() {
+         return preferences.getString("TextToTranslate", "");
+    }
 }
