@@ -42,31 +42,24 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Translation item;
-        private TextView termLabel, translationLabel;
+        private TextView termLabel, translationLabel, direcionLabel;
         private CheckBox favoriteCheckbox;
 
         ViewHolder(View itemView) {
             super(itemView);
             termLabel = (TextView) itemView.findViewById(R.id.list_term_label);
             translationLabel = (TextView) itemView.findViewById(R.id.list_translation_label);
+            direcionLabel = (TextView) itemView.findViewById(R.id.list_direcion_label);
             favoriteCheckbox = (CheckBox) itemView.findViewById(R.id.favorite_checkbox);
             favoriteCheckbox.setOnCheckedChangeListener(favoriteCheckListener);
             itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            Log.d(App.tag(this), "onClick " + getAdapterPosition() + " " + item.toString());
-            SpHelper.saveCurrentTextToTranslate(item.getTerm());
-            SpHelper.saveSourceLangCode(item.getSourceLangCode());
-            SpHelper.saveTargetLangCode(item.getTargetLangCode());
-            mainActivity.goToTranslationFragment();
         }
 
         void setItem(Translation item) {
             this.item = item;
             termLabel.setText(item.getTerm());
             translationLabel.setText(item.getTranslation());
+            direcionLabel.setText(item.getDirection());
             favoriteCheckbox.setOnCheckedChangeListener(null); // убираем listener, чтобы он не вызывался при отрисовке
             if (item.hasOption(Translation.SAVED_FAVORITES)) {
                 favoriteCheckbox.setChecked(true);
@@ -91,5 +84,14 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
                 dbManager.close();
             }
         };
+
+        @Override
+        public void onClick(View view) {
+            Log.d(App.tag(this), "onClick " + getAdapterPosition() + " " + item.toString());
+            SpHelper.saveCurrentTextToTranslate(item.getTerm());
+            SpHelper.saveSourceLangCode(item.getSourceLangCode());
+            SpHelper.saveTargetLangCode(item.getTargetLangCode());
+            mainActivity.goToTranslationFragment();
+        }
     }
 }

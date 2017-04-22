@@ -100,8 +100,8 @@
         android:layout_alignTop="@+id/translate_input"
         android:layout_toStartOf="@+id/translate_button_bar"
         android:layout_toEndOf="@+id/strut"
+        android:visibility="invisible"
         android:scrollbars="vertical"
-        android:text="Hello"
         android:textSize="20sp" />
 
     <TextView

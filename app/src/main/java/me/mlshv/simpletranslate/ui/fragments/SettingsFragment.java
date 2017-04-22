@@ -15,6 +15,7 @@ import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.ui.activities.LangsLoadActivity;
+import me.mlshv.simpletranslate.ui.widgets.AssuranceDialog;
 
 public class SettingsFragment extends Fragment {
 
@@ -76,7 +77,7 @@ public class SettingsFragment extends Fragment {
                     loadLangs();
             }
             if (action != null)
-                showAssuranceDialog(message, action);
+                AssuranceDialog.show(getContext(), message, action);
         }
     };
 
@@ -96,31 +97,6 @@ public class SettingsFragment extends Fragment {
         DbManager dbManager = new DbManager(App.getInstance()).open();
         dbManager.clearFavorites();
         dbManager.close();
-    }
-
-    private void showAssuranceDialog(String message, final Callable<Void> action) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
-        builder.setMessage(message);
-        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                try {
-                    action.call();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
     private void loadLangs() {
