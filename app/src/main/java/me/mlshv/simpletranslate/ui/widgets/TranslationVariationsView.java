@@ -100,10 +100,10 @@ public class TranslationVariationsView extends ScrollView {
             }
         });
         tv.setPadding(
-                getDimen(R.dimen.activity_horizontal_padding),
-                getDimen(R.dimen.activity_vertical_padding),
-                getDimen(R.dimen.activity_horizontal_padding),
-                getDimen(R.dimen.activity_vertical_padding));
+                getDimen(R.dimen.horizontal_padding),
+                getDimen(R.dimen.vertical_padding),
+                getDimen(R.dimen.horizontal_padding),
+                getDimen(R.dimen.vertical_padding));
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
         tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         return tv;

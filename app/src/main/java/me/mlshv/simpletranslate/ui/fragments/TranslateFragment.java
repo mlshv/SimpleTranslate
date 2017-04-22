@@ -17,7 +17,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -79,6 +81,7 @@ public class TranslateFragment extends Fragment {
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
         textInput = (TranslateInput) view.findViewById(R.id.translate_input);
         // ставим кнопку "готово" на клаве вместо кнопки новой строки и делаем её не fullscreen, убираем подсказки
+        // почему-то через XML не ставится
         textInput.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         textInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
         translationResultTextView = (TextView) view.findViewById(R.id.translation_result_text);
@@ -89,6 +92,16 @@ public class TranslateFragment extends Fragment {
     }
 
     private void initListeners(View view) {
+        view.findViewById(R.id.root).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    saveTranslationToHistory();
+                }
+            }
+        });
         Button changeLangButton = (Button) view.findViewById(R.id.change_language_button);
         changeLangButton.setOnClickListener(changeLangButtonOnClickListener);
         sourceLangLabel.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +121,7 @@ public class TranslateFragment extends Fragment {
         textInput.setOnEditorActionListener(translateInputDoneButtonListener);
         textInput.setOnBackButtonPressListener(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                TranslateFragment.this.saveTranslationToHistory();
+                textInput.clearFocus();
                 return null;
             }
         });
@@ -197,8 +210,8 @@ public class TranslateFragment extends Fragment {
         public void onFocusChange(View view, boolean hasFocus) {
             if (!hasFocus) {
                 // говорим, что пользователь закончил ввод
-                // это значит, что можно сохранять перевод в историю
-                saveTranslationToHistory();
+                // убираем фокус с textInput'a (фокус переходи на корневой layout, где стоит listener)
+                textInput.clearFocus();
             }
         }
     };
@@ -208,8 +221,7 @@ public class TranslateFragment extends Fragment {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                Log.d(App.tag(this), "onEditorAction: ввод закончен");
-                saveTranslationToHistory();
+                textInput.clearFocus();
             }
             return false;
         }

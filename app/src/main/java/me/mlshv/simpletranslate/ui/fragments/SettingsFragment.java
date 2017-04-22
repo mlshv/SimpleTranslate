@@ -1,10 +1,8 @@
 package me.mlshv.simpletranslate.ui.fragments;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,7 @@ import java.util.concurrent.Callable;
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbManager;
+import me.mlshv.simpletranslate.ui.activities.AboutActivity;
 import me.mlshv.simpletranslate.ui.activities.LangsLoadActivity;
 import me.mlshv.simpletranslate.ui.widgets.AssuranceDialog;
 
@@ -32,6 +31,7 @@ public class SettingsFragment extends Fragment {
         (view.findViewById(R.id.clear_history)).setOnClickListener(itemClickListener);
         (view.findViewById(R.id.clear_favorites)).setOnClickListener(itemClickListener);
         (view.findViewById(R.id.load_langs)).setOnClickListener(itemClickListener);
+        (view.findViewById(R.id.about)).setOnClickListener(itemClickListener);
     }
 
     private View.OnClickListener itemClickListener = new View.OnClickListener() {
@@ -75,6 +75,10 @@ public class SettingsFragment extends Fragment {
 
                 case R.id.load_langs:
                     loadLangs();
+                    break;
+
+                case R.id.about:
+                    showAboutActivity();
             }
             if (action != null)
                 AssuranceDialog.show(getContext(), message, action);
@@ -101,6 +105,11 @@ public class SettingsFragment extends Fragment {
 
     private void loadLangs() {
         Intent intent = new Intent(getContext(), LangsLoadActivity.class);
+        startActivity(intent);
+    }
+
+    private void showAboutActivity() {
+        Intent intent = new Intent(getContext(), AboutActivity.class);
         startActivity(intent);
     }
 }

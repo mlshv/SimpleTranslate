@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/progress_bar"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:paddingLeft="@dimen/activity_horizontal_padding"
-        android:paddingRight="@dimen/activity_horizontal_padding"
+        android:layout_marginBottom="@dimen/horizontal_margin"
+        android:paddingLeft="@dimen/horizontal_padding"
+        android:paddingRight="@dimen/horizontal_padding"
         android:text="@string/please_wait_for_langs_to_load"
         android:textAlignment="center"
         android:textSize="20sp" />

@@ -1,9 +1,10 @@
 <resources>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="activity_horizontal_padding">16dp</dimen>
-    <dimen name="activity_vertical_padding">9dp</dimen>
+    <dimen name="horizontal_margin">16dp</dimen>
+    <dimen name="vertical_margin">16dp</dimen>
+    <dimen name="horizontal_padding">16dp</dimen>
+    <dimen name="vertical_padding">9dp</dimen>
     <dimen name="first_level_margin">13dp</dimen>
     <dimen name="second_level_text_margin">26dp</dimen>
     <dimen name="vertical_padding_small">6dp</dimen>
+    <dimen name="vertical_padding_large">32dp</dimen>
 </resources>
