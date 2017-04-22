@@ -1,4 +1,4 @@
-package me.mlshv.simpletranslate.ui.views;
+package me.mlshv.simpletranslate.ui.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;

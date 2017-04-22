@@ -42,7 +42,6 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_TRANSLATIONS_TABLE);
         sqLiteDatabase.execSQL(CREATE_LANGS_TABLE);
-        putLangs(sqLiteDatabase);
     }
 
     DbHelper(Context context) {
@@ -54,12 +53,5 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TRANSLATIONS_TABLE);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + LANGS_TABLE);
         onCreate(sqLiteDatabase);
-    }
-
-    private void putLangs(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("INSERT INTO langs (lang_code, lang_name) VALUES (\"ru\", \"Русский\");");
-        sqLiteDatabase.execSQL("INSERT INTO langs (lang_code, lang_name) VALUES (\"en\", \"Английский\");");
-        sqLiteDatabase.execSQL("INSERT INTO langs (lang_code, lang_name) VALUES (\"fr\", \"Французский\");");
-        sqLiteDatabase.execSQL("INSERT INTO langs (lang_code, lang_name) VALUES (\"de\", \"Немецкий\");");
     }
 }

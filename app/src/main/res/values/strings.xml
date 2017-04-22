@@ -5,6 +5,7 @@
     <string name="title_choose_lang">Выберите язык</string>
     <string name="title_favorites">Избранное</string>
     <string name="title_settings">Настройки</string>
-    <string name="translate_disclaimer">Переведено сервисом «Яндекс.Переводчик»</string>
+    <string name="translate_api_notice"><u>Переведено сервисом «Яндекс.Переводчик»</u></string>
+    <string name="dict_api_notice"><u>Реализовано с помощью сервиса «Яндекс.Словарь»</u></string>
     <string name="please_wait_for_langs_to_load">Пожалуйста, дождитесь загрузки списка языков</string>
 </resources>

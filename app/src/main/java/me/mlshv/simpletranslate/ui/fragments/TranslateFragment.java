@@ -4,13 +4,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,8 +36,8 @@ import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.network.TranslationTask;
 import me.mlshv.simpletranslate.ui.activities.LangChangeActivity;
-import me.mlshv.simpletranslate.ui.views.TranslateInput;
-import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
+import me.mlshv.simpletranslate.ui.widgets.TranslateInput;
+import me.mlshv.simpletranslate.ui.widgets.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.LangUtil;
 import me.mlshv.simpletranslate.util.SpHelper;
 
@@ -52,6 +52,7 @@ public class TranslateFragment extends Fragment {
     private ProgressBar translationProgress;
     private CheckBox favoriteCheckbox;
     private Button copyButton;
+    private TextView apiNoticeText;
 
     private TranslationTask translationTask;
     private Translation currentVisibleTranslation;
@@ -84,6 +85,7 @@ public class TranslateFragment extends Fragment {
         translationProgress = (ProgressBar) view.findViewById(R.id.translation_progress);
         favoriteCheckbox = (CheckBox) view.findViewById(R.id.favorite_checkbox);
         copyButton = (Button) view.findViewById(R.id.translation_copy_button);
+        apiNoticeText = (TextView) view.findViewById(R.id.yandex_api_notice);
     }
 
     private void initListeners(View view) {
@@ -135,6 +137,13 @@ public class TranslateFragment extends Fragment {
             public void onClick(View view) {
                 textInput.setText("");
                 SpHelper.saveCurrentTextToTranslate("");
+            }
+        });
+        apiNoticeText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://translate.yandex.ru"));
+                startActivity(browserIntent);
             }
         });
     }
@@ -221,6 +230,7 @@ public class TranslateFragment extends Fragment {
         // отменяем предыдущий перевод-таск, если есть, и запускаем новый
         if (translationTask != null) translationTask.cancel(true);
         translationTask = new TranslationTask(onTranslationResultCallback);
+        // показываем анимацию загрузки и прячем кнопки
         translationProgress.setVisibility(View.VISIBLE);
         favoriteCheckbox.setVisibility(View.INVISIBLE);
         copyButton.setVisibility(View.INVISIBLE);
@@ -259,13 +269,8 @@ public class TranslateFragment extends Fragment {
         }
     }
 
-    private void renderTranslation(final Translation translation) {
-        if (!isAdded()) return;
-        translationResultTextView.setText(
-                String.format("%s\n%s",
-                        translation.getTranslation(),
-                        getResources().getString(R.string.translate_disclaimer)));
-        translationResultTextView.setMovementMethod(LinkMovementMethod.getInstance());
+    private void renderTranslation(Translation translation) {
+        translationResultTextView.setText(translation.getTranslation());
 
         if (translation.getVariations() != null) {
             Log.d(App.tag(this), "Варианты: " + translation.getVariations().toString());
@@ -281,10 +286,13 @@ public class TranslateFragment extends Fragment {
         }
 
         if (!translation.getTerm().isEmpty()) {
-            // показываем кнопки "Избранное" и "Скопировать"
+            // показываем кнопки "Избранное" и "Скопировать" а также сообщение об использовании API
             copyButton.setVisibility(View.VISIBLE);
             favoriteCheckbox.setVisibility(View.VISIBLE);
             favoriteCheckbox.setChecked(translation.hasOption(Translation.SAVED_FAVORITES));
+            apiNoticeText.setVisibility(View.VISIBLE);
+        } else {
+            apiNoticeText.setVisibility(View.GONE);
         }
     }
 

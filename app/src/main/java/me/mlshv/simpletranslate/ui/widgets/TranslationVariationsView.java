@@ -1,10 +1,14 @@
-package me.mlshv.simpletranslate.ui.views;
+package me.mlshv.simpletranslate.ui.widgets;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -71,6 +75,8 @@ public class TranslationVariationsView extends ScrollView {
                 }
             }
         }
+        if (!variations.isEmpty())
+            variationsContainer.addView(makeApiNoticeTextView());
         this.addView(variationsContainer);
     }
 
@@ -79,9 +85,28 @@ public class TranslationVariationsView extends ScrollView {
      * @param resourceId id ресурса отступа
      * @return значение отступа
      */
-
     private static int getDimen(int resourceId) {
         return (int) (App.getInstance().getResources().getDimension(resourceId));
+    }
+
+    private TextView makeApiNoticeTextView() {
+        TextView tv = new TextView(getContext());
+        tv.setText(getContext().getString(R.string.dict_api_notice));
+        tv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://tech.yandex.ru/dictionary/"));
+                getContext().startActivity(browserIntent);
+            }
+        });
+        tv.setPadding(
+                getDimen(R.dimen.activity_horizontal_padding),
+                getDimen(R.dimen.activity_vertical_padding),
+                getDimen(R.dimen.activity_horizontal_padding),
+                getDimen(R.dimen.activity_vertical_padding));
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
+        tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        return tv;
     }
 
     public TranslationVariationsView(Context context) {

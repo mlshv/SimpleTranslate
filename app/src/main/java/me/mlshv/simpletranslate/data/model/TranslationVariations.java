@@ -83,6 +83,10 @@ public class TranslationVariations {
         }
     }
 
+    public boolean isEmpty() {
+        return getAsMap().isEmpty();
+    }
+
     @Override
     public String toString() {
         return getAsMap().toString();

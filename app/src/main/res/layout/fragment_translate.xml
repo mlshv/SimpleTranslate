@@ -57,7 +57,7 @@
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
-    <me.mlshv.simpletranslate.ui.views.TranslateInput
+    <me.mlshv.simpletranslate.ui.widgets.TranslateInput
         android:id="@+id/translate_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -97,12 +97,24 @@
         android:scrollbars="vertical"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/yandex_api_notice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/translate_api_notice"
+        android:layout_below="@+id/translation_result_text"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/first_level_margin"
+        android:layout_toStartOf="@+id/translate_button_bar"
+        android:scrollbars="vertical"
+        android:textSize="20sp" />
+
     <LinearLayout
         android:orientation="vertical"
         android:id="@+id/variations_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/translation_result_text"
+        android:layout_below="@+id/yandex_api_notice"
         android:layout_alignStart="@+id/translation_result_text"
         android:layout_toStartOf="@+id/translate_button_bar" />
 
