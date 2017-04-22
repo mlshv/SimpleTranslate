@@ -8,8 +8,8 @@
     android:orientation="vertical"
     tools:context=".ui.activities.MainActivity">
 
-    <FrameLayout
-        android:id="@+id/main_container"
+    <me.mlshv.simpletranslate.ui.views.NonSwipeableViewPager
+        android:id="@+id/main_viewpager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.99" />

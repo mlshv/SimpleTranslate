@@ -15,7 +15,7 @@ import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
 import me.mlshv.simpletranslate.util.TranslationsRecyclerAdapter;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements PageableFragment {
     private DbManager dbManager;
     private RecyclerView historyList;
 
@@ -38,24 +38,31 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            Log.d(App.tag(this), "onStart: updating recyclerView");
-            if (historyList != null) {
-                dbManager.open();
-                ((TranslationsRecyclerAdapter) historyList.getAdapter())
-                        .changeCursor(dbManager.fetchHistory());
-                historyList.getAdapter().notifyDataSetChanged();
-            }
-        } else {
-            dbManager.close();
+    public void notifyPaged() {
+        Log.d(App.tag(this), "notifyPaged: обновляем данные...");
+        super.onResume();
+        if (historyList != null) {
+            ((TranslationsRecyclerAdapter) historyList.getAdapter())
+                    .changeCursor(dbManager.fetchHistory());
+            historyList.getAdapter().notifyDataSetChanged();
         }
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onResume() {
+        super.onResume();
+        dbManager.open();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dbManager.close();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         historyList = null;
         dbManager = null;
     }

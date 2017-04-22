@@ -11,7 +11,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -43,7 +42,7 @@ import me.mlshv.simpletranslate.ui.views.TranslateInput;
 import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.SpHelper;
 
-public class TranslateFragment extends Fragment {
+public class TranslateFragment extends Fragment implements PageableFragment {
     private TextView sourceLangLabel;
     private TextView targetLangLabel;
     private TranslateInput textInput;
@@ -152,19 +151,6 @@ public class TranslateFragment extends Fragment {
         sourceLangLabel.setText(sourceName);
         targetLangLabel.setText(targetName);
         SpHelper.saveSourceTargetLangs(source, target);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            Log.d(App.tag(this), "onHiddenChanged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
-            if (currentVisibleTranslation != null) {
-                setLanguages(currentVisibleTranslation.getTermLang(), currentVisibleTranslation.getTranslationLang());
-                this.textInput.setText(currentVisibleTranslation.getTerm());
-                renderTranslation(currentVisibleTranslation);
-            }
-        }
     }
 
     private View.OnClickListener changeLangButtonOnClickListener = new View.OnClickListener() {
@@ -345,6 +331,12 @@ public class TranslateFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        dbManager.open();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         dbManager.close();
@@ -353,9 +345,19 @@ public class TranslateFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         dbManager = null;
         translationTask = null;
+    }
+
+    @Override
+    public void notifyPaged() {
+        Log.d(App.tag(this), "notifyPaged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
+        if (currentVisibleTranslation != null) {
+            setLanguages(currentVisibleTranslation.getTermLang(), currentVisibleTranslation.getTranslationLang());
+            this.textInput.setText(currentVisibleTranslation.getTerm());
+            renderTranslation(currentVisibleTranslation);
+        }
     }
 }

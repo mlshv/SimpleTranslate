@@ -15,7 +15,7 @@ import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
 import me.mlshv.simpletranslate.util.TranslationsRecyclerAdapter;
 
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment extends Fragment implements PageableFragment {
     private DbManager dbManager;
     private RecyclerView favoritesList;
 
@@ -38,24 +38,31 @@ public class FavoritesFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            Log.d(App.tag(this), "onStart: updating recyclerView");
-            if (favoritesList != null) {
-                dbManager.open();
-                ((TranslationsRecyclerAdapter) favoritesList.getAdapter())
-                        .changeCursor(dbManager.fetchFavorites());
-                favoritesList.getAdapter().notifyDataSetChanged();
-            }
-        } else {
-            dbManager.close();
+    public void onResume() {
+        super.onResume();
+        dbManager.open();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dbManager.close();
+    }
+
+    @Override
+    public void notifyPaged() {
+        Log.d(App.tag(this), "notifyPaged: обновляем данные...");
+        super.onResume();
+        if (favoritesList != null) {
+            ((TranslationsRecyclerAdapter) favoritesList.getAdapter())
+                    .changeCursor(dbManager.fetchFavorites());
+            favoritesList.getAdapter().notifyDataSetChanged();
         }
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         favoritesList = null;
         dbManager = null;
     }
