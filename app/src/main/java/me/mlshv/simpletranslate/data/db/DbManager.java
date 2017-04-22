@@ -8,13 +8,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.mlshv.simpletranslate.App;
+import me.mlshv.simpletranslate.data.model.Lang;
 import me.mlshv.simpletranslate.data.model.Translation;
 
 public class DbManager {
     private DbHelper dbHelper;
     private Context context;
     private SQLiteDatabase database;
+    private List<Lang> languages;
 
     public DbManager(Context context) {
         this.context = context;
@@ -33,26 +38,26 @@ public class DbManager {
     public Cursor fetchHistory() {
         String selection = DbHelper.STORE_OPTIONS + " & ? != 0";
         String[] selectionArgs = new String[] { String.valueOf(Translation.SAVED_HISTORY) };
-        return fetchWhere(selection, selectionArgs);
+        return fetchTranslationsWhere(selection, selectionArgs);
     }
 
     public Cursor fetchFavorites() {
         String selection = DbHelper.STORE_OPTIONS + " & ? != 0";
         String[] selectionArgs = new String[] { String.valueOf(Translation.SAVED_FAVORITES) };
-        return fetchWhere(selection, selectionArgs);
+        return fetchTranslationsWhere(selection, selectionArgs);
     }
 
     @Nullable
     public Translation tryGetFromCache(String term) {
         String selection = DbHelper.TERM + "=?";
         String[] selectionArgs = new String[] { term };
-        Cursor c = fetchWhere(selection, selectionArgs);
+        Cursor c = fetchTranslationsWhere(selection, selectionArgs);
         if (c == null || c.getCount() == 0) return null;
         return Translation.fromCursor(c);
     }
 
     @Nullable
-    private Cursor fetchWhere(String selection, String[] selectionArgs) {
+    private Cursor fetchTranslationsWhere(String selection, String[] selectionArgs) {
         String[] columns = new String[] {
                 DbHelper._ID,
                 DbHelper.SOURCE_LANG,
@@ -62,7 +67,9 @@ public class DbManager {
                 DbHelper.STORE_OPTIONS,
                 DbHelper.VARIATIONS };
         if (database != null && database.isOpen()) {
-            Cursor cursor = database.query(DbHelper.TRANSLATIONS_TABLE, columns, selection, selectionArgs, null, null, DbHelper._ID + " DESC"); // сортировка по убыванию id
+            Cursor cursor = database.query(
+                    DbHelper.TRANSLATIONS_TABLE, columns, selection, selectionArgs, null, null,
+                    DbHelper._ID + " DESC"); // сортировка по убыванию id
             if (cursor != null) {
                 cursor.moveToFirst();
             }
@@ -123,5 +130,26 @@ public class DbManager {
                 " SET " + DbHelper.STORE_OPTIONS + " = " +
                 DbHelper.STORE_OPTIONS + " & ~" + storeOption +
                 " WHERE " + DbHelper.STORE_OPTIONS + " & " + storeOption + " != 0");
+    }
+
+    public List<Lang> getLanguages() {
+        List<Lang> langs = new ArrayList<>();
+        String[] columns = new String[] {
+                DbHelper._ID,
+                DbHelper.LANG_CODE,
+                DbHelper.LANG_NAME };
+        if (database != null && database.isOpen()) {
+            Cursor cursor = database.query(
+                    DbHelper.LANGS_TABLE, columns, null, null, null, null,
+                    DbHelper.LANG_NAME + " ASC"); // сортировка по возрастанию
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isLast()) {
+                    langs.add(Lang.fromCursor(cursor));
+                    cursor.moveToNext();
+                }
+            }
+        }
+        return langs;
     }
 }

@@ -40,10 +40,8 @@ public class HistoryFragment extends Fragment implements PageableFragment {
     @Override
     public void notifyPaged() {
         Log.d(App.tag(this), "notifyPaged: обновляем данные...");
-        super.onResume();
         if (historyList != null) {
-            ((TranslationsRecyclerAdapter) historyList.getAdapter())
-                    .changeCursor(dbManager.fetchHistory());
+            ((TranslationsRecyclerAdapter) historyList.getAdapter()).changeCursor(dbManager.fetchHistory());
             historyList.getAdapter().notifyDataSetChanged();
         }
     }

@@ -2,23 +2,35 @@ package me.mlshv.simpletranslate.util;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import me.mlshv.simpletranslate.App;
 
 public class SpHelper {
     private static SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
-    public static String getSourceLangCode() {
-        return preferences.getString("SourceLang", "ru");
+    public static String loadSourceLangCode() {
+        String result = preferences.getString("SourceLang", "ru");
+        Log.d("SpHelper", "loadSourceLangCode: " + result);
+        return result;
     }
 
-    public static String getTargetLangCode() {
-        return preferences.getString("TargetLang", "en");
+    public static String loadTargetLangCode() {
+        String result = preferences.getString("TargetLang", "en");
+        Log.d("SpHelper", "loadTargetLangCode: " + result);
+        return result;
     }
 
-    public static void saveSourceTargetLangs(String source, String target) {
+    public static void saveSourceLangCode(String code) {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("SourceLang", source);
-        editor.putString("TargetLang", target);
+        Log.d("SpHelper", "saveSourceLangCode: " + code);
+        editor.putString("SourceLang", code);
+        editor.apply();
+    }
+
+    public static void saveTargetLangCode(String code) {
+        SharedPreferences.Editor editor = preferences.edit();
+        Log.d("SpHelper", "saveTargetLangCode: " + code);
+        editor.putString("TargetLang", code);
         editor.apply();
     }
 }

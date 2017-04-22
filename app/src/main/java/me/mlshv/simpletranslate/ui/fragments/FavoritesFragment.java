@@ -52,7 +52,6 @@ public class FavoritesFragment extends Fragment implements PageableFragment {
     @Override
     public void notifyPaged() {
         Log.d(App.tag(this), "notifyPaged: обновляем данные...");
-        super.onResume();
         if (favoritesList != null) {
             ((TranslationsRecyclerAdapter) favoritesList.getAdapter())
                     .changeCursor(dbManager.fetchFavorites());

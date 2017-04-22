@@ -3,6 +3,7 @@ package me.mlshv.simpletranslate.ui.fragments;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,8 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
@@ -38,8 +37,10 @@ import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
 import me.mlshv.simpletranslate.network.TranslationRequest;
 import me.mlshv.simpletranslate.network.TranslationVariationsRequest;
+import me.mlshv.simpletranslate.ui.activities.LangChangeActivity;
 import me.mlshv.simpletranslate.ui.views.TranslateInput;
 import me.mlshv.simpletranslate.ui.views.TranslationVariationsView;
+import me.mlshv.simpletranslate.util.LangUtil;
 import me.mlshv.simpletranslate.util.SpHelper;
 
 public class TranslateFragment extends Fragment implements PageableFragment {
@@ -59,6 +60,9 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     private boolean translationTaskCompleted = false;
     private Translation currentVisibleTranslation;
 
+    private static final int CHANGE_SOURCE_LANG = 0;
+    private static final int CHANGE_TARGET_LANG = 1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,7 +78,19 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         changeLangButton.setOnClickListener(changeLangButtonOnClickListener);
         variationsContainer = (LinearLayout) view.findViewById(R.id.variations_container);
         sourceLangLabel = (TextView) view.findViewById(R.id.source_lang);
+        sourceLangLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseLanguage(CHANGE_SOURCE_LANG);
+            }
+        });
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
+        targetLangLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseLanguage(CHANGE_TARGET_LANG);
+            }
+        });
         textInput = (TranslateInput) view.findViewById(R.id.translate_input);
         textInput.addTextChangedListener(translateInputWatcher);
         textInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
@@ -121,9 +137,10 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     }
 
     private void initFragment(Bundle savedInstanceState) {
-        String source = SpHelper.getSourceLangCode();
-        String target = SpHelper.getTargetLangCode();
-        setLanguages(source, target);
+        String source = SpHelper.loadSourceLangCode();
+        String target = SpHelper.loadTargetLangCode();
+        setSourceLangCode(source);
+        setTargetLangCode(target);
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
         textInput.clearFocus();
@@ -145,21 +162,45 @@ public class TranslateFragment extends Fragment implements PageableFragment {
             outState.putString("SOURCE_STRING", currentVisibleTranslation.getTerm());
     }
 
-    private void setLanguages(String source, String target) {
-        String sourceName = getResources().getString(langCodeToResourceId.get(source));
-        String targetName = getResources().getString(langCodeToResourceId.get(target));
-        sourceLangLabel.setText(sourceName);
-        targetLangLabel.setText(targetName);
-        SpHelper.saveSourceTargetLangs(source, target);
+    private void setSourceLangCode(String langCode) {
+        String langName = LangUtil.getNameByCode(langCode);
+        sourceLangLabel.setText(langName);
+        SpHelper.saveSourceLangCode(langCode);
+    }
+
+    private void setTargetLangCode(String langCode) {
+        String langName = LangUtil.getNameByCode(langCode);
+        targetLangLabel.setText(langName);
+        SpHelper.saveTargetLangCode(langCode);
+    }
+
+    private void chooseLanguage(int requestLangCode) {
+        Intent intent = new Intent(getContext(), LangChangeActivity.class);
+        startActivityForResult(intent, requestLangCode);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String langName = data.getStringExtra("language");
+        switch (requestCode) {
+            case CHANGE_SOURCE_LANG:
+                setSourceLangCode(LangUtil.getCodeByName(langName));
+                break;
+            case CHANGE_TARGET_LANG:
+                setTargetLangCode(LangUtil.getCodeByName(langName));
+                break;
+        }
     }
 
     private View.OnClickListener changeLangButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             // меняем местами source и target
-            String source = SpHelper.getTargetLangCode();
-            String target = SpHelper.getSourceLangCode();
-            setLanguages(source, target);
+            String newSourceLangCode = SpHelper.loadTargetLangCode();
+            String newTargetLangCode = SpHelper.loadSourceLangCode();
+            setSourceLangCode(newSourceLangCode);
+            setTargetLangCode(newTargetLangCode);
             performTranslationTask();
         }
     };
@@ -248,8 +289,8 @@ public class TranslateFragment extends Fragment implements PageableFragment {
                 Log.d(App.tag(this), "Достал из кэша " + t);
                 return t;
             }
-            String source = SpHelper.getSourceLangCode();
-            String target = SpHelper.getTargetLangCode();
+            String source = SpHelper.loadSourceLangCode();
+            String target = SpHelper.loadTargetLangCode();
             translationRequest = new TranslationRequest();
             variationsRequest = new TranslationVariationsRequest();
             String result = translationRequest.getTranslation(source + "-" + target, textToTranslate);
@@ -311,11 +352,6 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         }
     }
 
-    public final Map<String, Integer> langCodeToResourceId = new HashMap<String, Integer>() {{
-        put("ru", R.string.russian);
-        put("en", R.string.english);
-    }};
-
     public void setVisibleTranslation(Translation translation) {
         currentVisibleTranslation = translation;
     }
@@ -355,7 +391,8 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     public void notifyPaged() {
         Log.d(App.tag(this), "notifyPaged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
         if (currentVisibleTranslation != null) {
-            setLanguages(currentVisibleTranslation.getTermLang(), currentVisibleTranslation.getTranslationLang());
+            setSourceLangCode(currentVisibleTranslation.getTermLang());
+            setTargetLangCode(currentVisibleTranslation.getTranslationLang());
             this.textInput.setText(currentVisibleTranslation.getTerm());
             renderTranslation(currentVisibleTranslation);
         }

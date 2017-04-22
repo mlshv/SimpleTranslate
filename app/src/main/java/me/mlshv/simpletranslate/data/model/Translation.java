@@ -14,7 +14,7 @@ public class Translation {
     private final String term;
     private final String translation;
     private final TranslationVariations variations;
-    // Битовая маска. Первый разряд - сохранение в истории, второй - в избранном. Если по нулям оба - кэш
+    // Битовая маска. Нулевой разряд - сохранение в истории, первый - в избранном. Если по нулям оба - кэш
     private int storeOptions = SAVED_CACHE;
 
     public Translation(String termLang, String translationLang, String term, String translation, TranslationVariations variations) {

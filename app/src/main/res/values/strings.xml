@@ -2,9 +2,8 @@
     <string name="app_name">Простой переводчик</string>
     <string name="title_translate">Переводчик</string>
     <string name="title_history">История</string>
+    <string name="title_choose_lang">Выберите язык</string>
     <string name="title_favorites">Избранное</string>
     <string name="title_settings">Настройки</string>
-    <string name="russian">Русский</string>
-    <string name="english">English</string>
     <string name="translate_disclaimer">Переведено сервисом «Яндекс.Переводчик»</string>
 </resources>
