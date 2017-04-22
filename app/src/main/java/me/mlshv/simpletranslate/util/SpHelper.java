@@ -43,4 +43,14 @@ public class SpHelper {
     public static String loadCurrentTextToTranslate() {
          return preferences.getString("TextToTranslate", "");
     }
+
+    public static void setLangListLoadedTrue() {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("LangsListLoaded", true);
+        editor.apply();
+    }
+
+    public static boolean isLangListLoaded() {
+        return preferences.getBoolean("LangsListLoaded", false);
+    }
 }

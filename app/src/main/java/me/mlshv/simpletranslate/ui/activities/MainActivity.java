@@ -1,5 +1,6 @@
 package me.mlshv.simpletranslate.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -13,6 +14,7 @@ import me.mlshv.simpletranslate.ui.fragments.HistoryFragment;
 import me.mlshv.simpletranslate.ui.fragments.SettingsFragment;
 import me.mlshv.simpletranslate.ui.fragments.TranslateFragment;
 import me.mlshv.simpletranslate.util.BottomNavigationViewHelper;
+import me.mlshv.simpletranslate.util.SpHelper;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navigation;
@@ -26,11 +28,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkLangsLoaded();
         translateFragment = new TranslateFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_container, translateFragment)
                 .commit();
         initBottomNavigation();
+    }
+
+    private void checkLangsLoaded() {
+        if (!SpHelper.isLangListLoaded()) {
+            Intent intent = new Intent(this, LangsLoadActivity.class);
+            startActivity(intent);
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

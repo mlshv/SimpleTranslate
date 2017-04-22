@@ -16,10 +16,10 @@ public class TranslationTask extends AsyncTask<Object, String, Translation> {
     private TranslationRequest translationRequest;
     private TranslationVariationsRequest variationsRequest;
     private DbManager dbManager = new DbManager(App.getInstance()).open();
-    private Callable<Void> onResultCallback;
+    private Callable<Void> resultCallback;
 
-    public TranslationTask(Callable<Void> onResultCallback) {
-        this.onResultCallback = onResultCallback;
+    public TranslationTask(Callable<Void> resultCallback) {
+        this.resultCallback = resultCallback;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class TranslationTask extends AsyncTask<Object, String, Translation> {
     protected void onPostExecute(Translation result) {
         Log.d(App.tag(this), "TranslationTask завершена");
         try {
-            onResultCallback.call();
+            resultCallback.call();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,6 +65,7 @@ public class TranslationTask extends AsyncTask<Object, String, Translation> {
             translationRequest.cancel();
         if (variationsRequest != null)
             variationsRequest.cancel();
+        resultCallback = null;
         dbManager.close();
     }
 }

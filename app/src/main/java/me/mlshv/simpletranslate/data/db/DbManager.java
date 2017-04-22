@@ -150,4 +150,14 @@ public class DbManager {
         }
         return langs;
     }
+
+    public void updateLanguages(List<Lang> langsList) {
+        database.delete(DbHelper.LANGS_TABLE, null, null);
+        ContentValues contentValues = new ContentValues();
+        for (Lang lang : langsList) {
+            contentValues.put(DbHelper.LANG_CODE, lang.getCode());
+            contentValues.put(DbHelper.LANG_NAME, lang.getName());
+            database.insert(DbHelper.LANGS_TABLE, null, contentValues);
+        }
+    }
 }

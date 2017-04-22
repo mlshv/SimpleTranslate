@@ -75,4 +75,22 @@
             android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/load_langs"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:padding="@dimen/first_level_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Обновить список языков"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"/>
+    </LinearLayout>
 </LinearLayout>
