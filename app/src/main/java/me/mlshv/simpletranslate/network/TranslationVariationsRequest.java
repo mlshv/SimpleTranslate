@@ -17,7 +17,7 @@ public class TranslationVariationsRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public TranslationVariations getVariations(String translationDirection, String textToLookup) {
+    public TranslationVariations perform(String translationDirection, String textToLookup) {
         URL url;
         TranslationVariations result = null;
         try {

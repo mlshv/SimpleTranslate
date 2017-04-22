@@ -16,7 +16,7 @@ public class TranslationRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public String getTranslation(String translationDirection, String textToTranslate) {
+    public String perform(String translationDirection, String textToTranslate) {
         URL url;
         String result = null;
         try {

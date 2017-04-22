@@ -146,7 +146,7 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         textInput.clearFocus();
         if (savedInstanceState != null) {
             currentVisibleTranslation =
-                dbManager.tryGetFromCache(savedInstanceState.getString("SOURCE_STRING"));
+                dbManager.tryGetFromCache(savedInstanceState.getString("SOURCE_STRING"), source + "-" + target);
         }
 
         if (currentVisibleTranslation != null) {
@@ -284,18 +284,18 @@ public class TranslateFragment extends Fragment implements PageableFragment {
         protected Translation doInBackground(Object... params) {
             Log.d(App.tag(this), "TranslationTask запущена");
             textToTranslate = (String) params[0];
-            Translation t = dbManager.tryGetFromCache(textToTranslate);
+            String source = SpHelper.loadSourceLangCode();
+            String target = SpHelper.loadTargetLangCode();
+            Translation t = dbManager.tryGetFromCache(textToTranslate, source + "-" + target);
             if (t != null) {
                 Log.d(App.tag(this), "Достал из кэша " + t);
                 return t;
             }
-            String source = SpHelper.loadSourceLangCode();
-            String target = SpHelper.loadTargetLangCode();
             translationRequest = new TranslationRequest();
             variationsRequest = new TranslationVariationsRequest();
-            String result = translationRequest.getTranslation(source + "-" + target, textToTranslate);
-            TranslationVariations variations = variationsRequest.getVariations(source + "-" + target, textToTranslate);
-            t = new Translation(source, target, textToTranslate, result, variations);
+            String result = translationRequest.perform(source + "-" + target, textToTranslate);
+            TranslationVariations variations = variationsRequest.perform(source + "-" + target, textToTranslate);
+            t = new Translation(source + "-" + target, textToTranslate, result, variations);
             dbManager.updateOrInsertTranslation(t);
             return t;
         }
@@ -391,8 +391,8 @@ public class TranslateFragment extends Fragment implements PageableFragment {
     public void notifyPaged() {
         Log.d(App.tag(this), "notifyPaged: currentVisibleTranslation " + String.valueOf(currentVisibleTranslation));
         if (currentVisibleTranslation != null) {
-            setSourceLangCode(currentVisibleTranslation.getTermLang());
-            setTargetLangCode(currentVisibleTranslation.getTranslationLang());
+            setSourceLangCode(currentVisibleTranslation.getSourceLangCode());
+            setTargetLangCode(currentVisibleTranslation.getTargetLangCode());
             this.textInput.setText(currentVisibleTranslation.getTerm());
             renderTranslation(currentVisibleTranslation);
         }

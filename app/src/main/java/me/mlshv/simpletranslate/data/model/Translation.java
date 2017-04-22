@@ -9,40 +9,41 @@ public class Translation {
     public static final int SAVED_HISTORY = 1;
     public static final int SAVED_FAVORITES = 10;
 
-    private final String termLang;
-    private final String translationLang;
+    private final String direction;
     private final String term;
     private final String translation;
     private final TranslationVariations variations;
     // Битовая маска. Нулевой разряд - сохранение в истории, первый - в избранном. Если по нулям оба - кэш
     private int storeOptions = SAVED_CACHE;
 
-    public Translation(String termLang, String translationLang, String term, String translation, TranslationVariations variations) {
-        this.termLang = termLang;
-        this.translationLang = translationLang;
+    public Translation(String direction, String term, String translation, TranslationVariations variations) {
+        this.direction = direction;
         this.term = term;
         this.translation = translation;
         this.variations = variations;
     }
 
     public static Translation fromCursor(Cursor cursor) {
-        String termLang = cursor.getString(cursor.getColumnIndex(DbHelper.SOURCE_LANG));
-        String translationLang = cursor.getString(cursor.getColumnIndex(DbHelper.TRANSLATION_LANG));
+        String direction = cursor.getString(cursor.getColumnIndex(DbHelper.DIRECTION));
         String term = cursor.getString(cursor.getColumnIndex(DbHelper.TERM));
         String translation = cursor.getString(cursor.getColumnIndex(DbHelper.TRANSLATION));
         int savedState = cursor.getInt(cursor.getColumnIndex(DbHelper.STORE_OPTIONS));
         TranslationVariations variations = new TranslationVariations(cursor.getString(cursor.getColumnIndex(DbHelper.VARIATIONS)));
-        Translation t = new Translation(termLang, translationLang, term, translation, variations);
+        Translation t = new Translation(direction, term, translation, variations);
         t.addStoreOption(savedState);
         return t;
     }
 
-    public String getTermLang() {
-        return termLang;
+    public String getDirection() {
+        return direction;
     }
 
-    public String getTranslationLang() {
-        return translationLang;
+    public String getSourceLangCode() {
+        return direction.split("-")[0];
+    }
+
+    public String getTargetLangCode() {
+        return direction.split("-")[1];
     }
 
     public String getTerm() {

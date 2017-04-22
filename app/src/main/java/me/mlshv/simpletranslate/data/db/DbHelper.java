@@ -15,8 +15,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Колонки таблицы с переводами
     public static final String _ID = "_id";
-    public static final String SOURCE_LANG = "source_lang";
-    public static final String TRANSLATION_LANG = "translation_lang";
+    public static final String DIRECTION = "direction";
     public static final String TERM = "word";
     public static final String TRANSLATION = "translation";
     public static final String STORE_OPTIONS = "store_options"; // битовая маска. Описание в Translation.java
@@ -28,9 +27,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TRANSLATIONS_TABLE = "create table " + TRANSLATIONS_TABLE + "("
             + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + SOURCE_LANG + " TEXT, "
-            + TRANSLATION_LANG + " TEXT, "
-            + TERM + " TEXT NOT NULL UNIQUE, "
+            + DIRECTION + " TEXT, "
+            + TERM + " TEXT NOT NULL, "
             + TRANSLATION + " TEXT, "
             + STORE_OPTIONS + " INTEGER, "
             + VARIATIONS + " TEXT);";

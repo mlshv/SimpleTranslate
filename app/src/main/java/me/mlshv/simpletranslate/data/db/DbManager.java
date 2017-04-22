@@ -48,9 +48,9 @@ public class DbManager {
     }
 
     @Nullable
-    public Translation tryGetFromCache(String term) {
-        String selection = DbHelper.TERM + "=?";
-        String[] selectionArgs = new String[] { term };
+    public Translation tryGetFromCache(String term, String direction) {
+        String selection = DbHelper.TERM + "=? AND " + DbHelper.DIRECTION + "=?";
+        String[] selectionArgs = new String[] { term, direction };
         Cursor c = fetchTranslationsWhere(selection, selectionArgs);
         if (c == null || c.getCount() == 0) return null;
         return Translation.fromCursor(c);
@@ -60,8 +60,7 @@ public class DbManager {
     private Cursor fetchTranslationsWhere(String selection, String[] selectionArgs) {
         String[] columns = new String[] {
                 DbHelper._ID,
-                DbHelper.SOURCE_LANG,
-                DbHelper.TRANSLATION_LANG,
+                DbHelper.DIRECTION,
                 DbHelper.TERM,
                 DbHelper.TRANSLATION,
                 DbHelper.STORE_OPTIONS,
@@ -80,7 +79,7 @@ public class DbManager {
     }
 
     public void updateOrInsertTranslation(Translation translation) {
-        Translation existed = tryGetFromCache(translation.getTerm());
+        Translation existed = tryGetFromCache(translation.getTerm(), translation.getDirection());
         if (existed != null) {
             translation.addStoreOption(existed.getStoreOptions());
         }
@@ -89,8 +88,7 @@ public class DbManager {
 
     public void insertTranslation(Translation translation) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbHelper.SOURCE_LANG, translation.getTermLang());
-        contentValues.put(DbHelper.TRANSLATION_LANG, translation.getTranslationLang());
+        contentValues.put(DbHelper.DIRECTION, translation.getDirection());
         contentValues.put(DbHelper.TERM, translation.getTerm());
         contentValues.put(DbHelper.TRANSLATION, translation.getTranslation());
         contentValues.put(DbHelper.STORE_OPTIONS, translation.getStoreOptions());
@@ -105,8 +103,8 @@ public class DbManager {
 
     public void deleteTranslation(Translation translation) {
         Log.d(App.tag(this), "deleteTranslation: удаляю перевод " + translation);
-        String whereClause = DbHelper.TERM + "=?";
-        String[] whereArgs = new String[] { translation.getTerm() };
+        String whereClause = DbHelper.TERM + "=? AND " +DbHelper.DIRECTION + "=?";
+        String[] whereArgs = new String[] { translation.getTerm(), translation.getDirection() };
         if (database != null && database.isOpen())
             database.delete(DbHelper.TRANSLATIONS_TABLE, whereClause, whereArgs);
     }
