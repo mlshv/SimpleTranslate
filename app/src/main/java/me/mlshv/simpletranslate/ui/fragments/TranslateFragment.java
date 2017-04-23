@@ -101,17 +101,17 @@ public class TranslateFragment extends Fragment {
         llErrorContainer = (LinearLayout) view.findViewById(R.id.error_container);
         llVariationsContainer = (LinearLayout) view.findViewById(R.id.variations_container);
         tvSourceLang = (TextView) view.findViewById(R.id.source_lang);
-        tvTargetLang = (TextView) view.findViewById(R.id.target_lang);
-        etTranslateInput = (TranslateInput) view.findViewById(R.id.translate_input);
+        tvTargetLang = (TextView) view.findViewById(R.id.text_target_lang);
+        etTranslateInput = (TranslateInput) view.findViewById(R.id.edittext_translate);
         // ставим кнопку "готово" на клаве вместо кнопки новой строки и делаем её не fullscreen, убираем подсказки
         // почему-то через XML не ставится
         etTranslateInput.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         etTranslateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        tvTranslation = (TextView) view.findViewById(R.id.translation_result_text);
+        tvTranslation = (TextView) view.findViewById(R.id.text_translation_result);
         translationProgress = (ProgressBar) view.findViewById(R.id.translation_progress);
-        chkFavorite = (CheckBox) view.findViewById(R.id.favorite_checkbox);
-        btnCopy = (Button) view.findViewById(R.id.translation_copy_button);
-        tvApiNotice = (TextView) view.findViewById(R.id.yandex_api_notice);
+        chkFavorite = (CheckBox) view.findViewById(R.id.checkbox_favorite);
+        btnCopy = (Button) view.findViewById(R.id.button_translation_copy);
+        tvApiNotice = (TextView) view.findViewById(R.id.text_yandex_api_notice);
     }
 
     private void initListeners(View view) {
@@ -124,14 +124,10 @@ public class TranslateFragment extends Fragment {
                     // прячем клавиатуру
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    // если перевод ещё не запущен, надо его запустить
-                    if (translationTask != null && translationTask.getStatus() != AsyncTask.Status.RUNNING) {
-                        performTranslationTask();
-                    }
                 }
             }
         });
-        Button changeLangButton = (Button) view.findViewById(R.id.change_language_button);
+        Button changeLangButton = (Button) view.findViewById(R.id.button_change_language);
         changeLangButton.setOnClickListener(changeLangButtonOnClickListener);
         tvSourceLang.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +169,7 @@ public class TranslateFragment extends Fragment {
                 showToast("Перевод скопирован");
             }
         });
-        Button translationClearButton = (Button) view.findViewById(R.id.input_clear_button);
+        Button translationClearButton = (Button) view.findViewById(R.id.button_input_clear);
         translationClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -268,7 +264,7 @@ public class TranslateFragment extends Fragment {
 
     private void performTranslationTask() {
         // если нет текста, то не надо ничего запускать
-        if (etTranslateInput.getText().toString().equals("")) {
+        if (etTranslateInput.getText().toString().trim().equals("")) {
             tvTranslation.setText("");
             setViewsStateError();
             return;
@@ -278,7 +274,9 @@ public class TranslateFragment extends Fragment {
         translationTask = new TranslationTask(onTranslationResultCallback);
         // показываем анимацию загрузки и прячем кнопки
         setViewsStateTranslating();
-        translationTask.execute(etTranslateInput.getText().toString());
+        String source = Util.SPrefs.loadSourceLangCode();
+        String target = Util.SPrefs.loadTargetLangCode();
+        translationTask.execute(etTranslateInput.getText().toString(), source + "-" + target);
     }
 
     private Callable<Void> onTranslationResultCallback = new Callable<Void>() {
@@ -377,12 +375,12 @@ public class TranslateFragment extends Fragment {
     private void setViewsStateTranslated() {
         Log.d(App.tag(this), "setViewsStateTranslated");
         translationProgress.setVisibility(View.INVISIBLE);
+        tvTranslation.setVisibility(View.VISIBLE);
         btnCopy.setVisibility(View.VISIBLE);
         chkFavorite.setVisibility(View.VISIBLE);
         chkFavorite.setChecked(currentVisibleTranslation.hasOption(Translation.SAVED_FAVORITES));
         tvApiNotice.setVisibility(View.VISIBLE);
         llVariationsContainer.setVisibility(View.VISIBLE);
-        tvTranslation.setVisibility(View.VISIBLE);
     }
 
     private void setViewsStateError() {
@@ -408,6 +406,7 @@ public class TranslateFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(App.tag(this), "onResume");
         // обновляем направление перевода и ставим в поле ввода последний переводимый текст
         String source = Util.SPrefs.loadSourceLangCode();
         String target = Util.SPrefs.loadTargetLangCode();

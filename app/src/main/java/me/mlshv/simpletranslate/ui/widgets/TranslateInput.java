@@ -2,9 +2,13 @@ package me.mlshv.simpletranslate.ui.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.TextView;
 
 import java.util.concurrent.Callable;
+
+import me.mlshv.simpletranslate.App;
 
 
 public class TranslateInput extends android.support.v7.widget.AppCompatEditText {
@@ -20,6 +24,12 @@ public class TranslateInput extends android.support.v7.widget.AppCompatEditText 
 
     public TranslateInput(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        super.setText(text, type);
+        Log.d(App.tag(this), "setText: " + text);
     }
 
     @Override

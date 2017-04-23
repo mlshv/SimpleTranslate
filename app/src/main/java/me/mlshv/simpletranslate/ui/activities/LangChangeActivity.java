@@ -22,7 +22,7 @@ public class LangChangeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lang_change);
 
         final List<String> langNames = Util.Langs.getLangNames();
-        ListView lvLanguages = (ListView) findViewById(R.id.languages_list);
+        ListView lvLanguages = (ListView) findViewById(R.id.list_languages);
         lvLanguages.setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.row_languages_list, langNames));
         lvLanguages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

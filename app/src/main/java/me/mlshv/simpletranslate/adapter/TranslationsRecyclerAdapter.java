@@ -49,7 +49,7 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
             tvTerm = (TextView) itemView.findViewById(R.id.list_term_label);
             tvTranslation = (TextView) itemView.findViewById(R.id.list_translation_label);
             rvDirection = (TextView) itemView.findViewById(R.id.list_direcion_label);
-            chkFavorite = (CheckBox) itemView.findViewById(R.id.favorite_checkbox);
+            chkFavorite = (CheckBox) itemView.findViewById(R.id.checkbox_favorite);
             chkFavorite.setOnCheckedChangeListener(favoriteCheckListener);
             itemView.setOnClickListener(this);
         }

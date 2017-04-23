@@ -28,11 +28,11 @@
             android:textColor="@color/colorTextPrimary"
             android:textSize="20sp"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/change_language_button"
+            android:layout_toLeftOf="@+id/button_change_language"
             android:layout_alignParentBottom="true" />
 
         <Button
-            android:id="@+id/change_language_button"
+            android:id="@+id/button_change_language"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="47dp"
             android:padding="0dp"
@@ -44,7 +44,7 @@
             android:layout_alignParentBottom="true" />
 
         <TextView
-            android:id="@+id/target_lang"
+            android:id="@+id/text_target_lang"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -53,7 +53,7 @@
             android:textColor="@color/colorTextPrimary"
             android:textSize="20sp"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/change_language_button"
+            android:layout_toRightOf="@+id/button_change_language"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
@@ -63,7 +63,8 @@
         android:layout_centerHorizontal="true"/>
 
     <me.mlshv.simpletranslate.ui.widgets.TranslateInput
-        android:id="@+id/translate_input"
+        android:id="@+id/edittext_translate"
+        android:configChanges="orientation|keyboardHidden"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top"
@@ -82,7 +83,7 @@
         android:layout_alignParentBottom="true" />
 
     <Button
-        android:id="@+id/input_clear_button"
+        android:id="@+id/button_input_clear"
         android:layout_marginLeft="-42dp"
         android:layout_marginTop="4dp"
         android:layout_width="26dp"
@@ -90,14 +91,14 @@
         android:layout_gravity="right"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:background="@drawable/ic_close_black_24dp"
-        android:layout_alignTop="@+id/translate_input"
-        android:layout_toRightOf="@+id/translate_input" />
+        android:layout_alignTop="@+id/edittext_translate"
+        android:layout_toRightOf="@+id/edittext_translate" />
 
     <TextView
-        android:id="@+id/translation_result_text"
+        android:id="@+id/text_translation_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/translate_input"
+        android:layout_alignTop="@+id/edittext_translate"
         android:layout_toLeftOf="@+id/translate_button_bar"
         android:layout_toRightOf="@+id/strut"
         android:visibility="invisible"
@@ -105,11 +106,11 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/yandex_api_notice"
+        android:id="@+id/text_yandex_api_notice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/translate_api_notice"
-        android:layout_below="@+id/translation_result_text"
+        android:layout_below="@+id/text_translation_result"
         android:layout_toLeftOf="@+id/translate_button_bar"
         android:scrollbars="vertical"
         android:textSize="20sp"
@@ -131,8 +132,8 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/yandex_api_notice"
-        android:layout_alignLeft="@+id/translation_result_text"
+        android:layout_below="@+id/text_yandex_api_notice"
+        android:layout_alignLeft="@+id/text_translation_result"
         android:layout_toLeftOf="@+id/translate_button_bar" />
 
     <ProgressBar
@@ -154,11 +155,11 @@
         android:visibility="visible"
         android:padding="0dp"
         android:layout_marginRight="@dimen/first_level_margin"
-        android:layout_alignTop="@+id/translation_result_text"
+        android:layout_alignTop="@+id/text_translation_result"
         android:layout_alignParentRight="true">
 
         <CheckBox
-            android:id="@+id/favorite_checkbox"
+            android:id="@+id/checkbox_favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="?android:attr/starStyle"
@@ -167,7 +168,7 @@
             android:theme="@style/favoriteCheckboxStyle" />
 
         <Button
-            android:id="@+id/translation_copy_button"
+            android:id="@+id/button_translation_copy"
             android:layout_marginTop="@dimen/vertical_margin"
             android:layout_width="26dp"
             android:layout_height="26dp"

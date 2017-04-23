@@ -27,7 +27,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void initFragment(View view) {
-        rvHistory = (RecyclerView) view.findViewById(R.id.history_list);
+        rvHistory = (RecyclerView) view.findViewById(R.id.recycler_history);
         rvHistory.setLayoutManager(new LinearLayoutManager(App.getInstance()));
         dbManager = new DbManager(App.getInstance());
         dbManager.open();

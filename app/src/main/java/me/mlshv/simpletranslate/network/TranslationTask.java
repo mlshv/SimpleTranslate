@@ -9,7 +9,6 @@ import org.json.JSONException;
 import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
-import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
@@ -25,17 +24,11 @@ public class TranslationTask extends AsyncTask<Object, String, TranslationTaskRe
     }
 
     @Override
-    protected void onPreExecute() {
-        Log.d(App.tag(this), "Запускаю TranslationTask");
-    }
-
-    @Override
     protected TranslationTaskResult doInBackground(Object... params) {
-        Log.d(App.tag(this), "TranslationTask запущена");
+        Log.d(App.tag(this), "TranslationTask " + hashCode() + " запущена");
         String textToTranslate = (String) params[0];
-        String source = Util.SPrefs.loadSourceLangCode();
-        String target = Util.SPrefs.loadTargetLangCode();
-        Translation t = dbManager.tryGetFromCache(textToTranslate, source + "-" + target);
+        String direction = (String) params[1];
+        Translation t = dbManager.tryGetFromCache(textToTranslate, direction);
         if (t != null) {
             Log.d(App.tag(this), "Достал из кэша " + t);
             return new TranslationTaskResult(t);
@@ -44,16 +37,16 @@ public class TranslationTask extends AsyncTask<Object, String, TranslationTaskRe
         variationsRequest = new TranslationVariationsRequest();
         String translationResultString;
         try {
-            translationResultString = translationRequest.perform(source + "-" + target, textToTranslate);
+            translationResultString = translationRequest.perform(direction, textToTranslate);
         } catch (Exception e) {
             Log.d(App.tag(this), "Исключение при загрузке перевода " + e);
             return new TranslationTaskResult(e);
         }
         TranslationVariations variations = null;
         try {
-            variations = variationsRequest.perform(source + "-" + target, textToTranslate);
+            variations = variationsRequest.perform(direction, textToTranslate);
         } catch (JSONException ignored) {} // не получилось найти варианты перевода, игнорируем
-        t = new Translation(source + "-" + target, textToTranslate, translationResultString, variations);
+        t = new Translation(direction, textToTranslate, translationResultString, variations);
         dbManager.updateOrInsertTranslation(t);
         return new TranslationTaskResult(t);
     }

@@ -11,7 +11,7 @@
     android:background="?attr/selectableItemBackground">
 
     <CheckBox
-        android:id="@+id/favorite_checkbox"
+        android:id="@+id/checkbox_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -31,7 +31,7 @@
         android:maxLines="1"
         android:textColor="@color/colorTextPrimary"
         android:textSize="18sp"
-        android:layout_toRightOf="@+id/favorite_checkbox"
+        android:layout_toRightOf="@+id/checkbox_favorite"
         android:layout_toLeftOf="@+id/list_direcion_label" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:maxLines="1"
         android:textColor="@color/colorTextSecondary"
         android:textSize="14sp"
-        android:layout_toRightOf="@+id/favorite_checkbox"
+        android:layout_toRightOf="@+id/checkbox_favorite"
         android:layout_toLeftOf="@+id/list_direcion_label" />
 
     <TextView
@@ -58,7 +58,7 @@
         android:textColor="@color/colorTextSecondary"
         android:textSize="14sp"
         android:gravity="center"
-        android:layout_alignTop="@+id/favorite_checkbox"
-        android:layout_alignBottom="@+id/favorite_checkbox" />
+        android:layout_alignTop="@+id/checkbox_favorite"
+        android:layout_alignBottom="@+id/checkbox_favorite" />
 
 </RelativeLayout>

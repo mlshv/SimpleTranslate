@@ -24,7 +24,7 @@
             android:textSize="20sp" />
     </LinearLayout>
     <ListView
-        android:id="@+id/languages_list"
+        android:id="@+id/list_languages"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

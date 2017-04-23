@@ -5,7 +5,7 @@
     android:id="@+id/error_root">
 
     <TextView
-        android:id="@+id/error_message"
+        android:id="@+id/text_error_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"

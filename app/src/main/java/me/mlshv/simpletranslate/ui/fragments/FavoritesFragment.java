@@ -27,7 +27,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void initFragment(View view) {
-        favoritesList = (RecyclerView) view.findViewById(R.id.favorites_list);
+        favoritesList = (RecyclerView) view.findViewById(R.id.recycler_favorites);
         favoritesList.setLayoutManager(new LinearLayoutManager(App.getInstance()));
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
