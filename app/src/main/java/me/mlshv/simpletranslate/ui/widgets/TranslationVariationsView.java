@@ -26,9 +26,9 @@ public class TranslationVariationsView extends ScrollView {
     private static final int FIRST_LEVEL_MARGIN = getDimen(R.dimen.first_level_margin);
     private static final int SECOND_LEVEL_MARGIN = getDimen(R.dimen.second_level_text_margin);
     // размер текста в sp
-    private static final int FIRST_LEVEL_TEXT_SIZE = 24;
-    private static final int SECOND_LEVEL_TEXT_SIZE = 20;
-    private static final int THIRD_LEVEL_TEXT_SIZE = 18;
+    private static final int FIRST_LEVEL_TEXT_SIZE = 20;
+    private static final int SECOND_LEVEL_TEXT_SIZE = 18;
+    private static final int THIRD_LEVEL_TEXT_SIZE = 16;
 
     public TranslationVariationsView(Context context, TranslationVariations variations) {
         super(context);
@@ -55,12 +55,13 @@ public class TranslationVariationsView extends ScrollView {
             TextView tvVariation = new TextView(getContext());
             tvVariation.setTextSize(TypedValue.COMPLEX_UNIT_SP, FIRST_LEVEL_TEXT_SIZE);
             tvVariation.setText(variation);
-            tvVariation.setLayoutParams(paramsFirstLevel);
+            int textColorAccent = ContextCompat.getColor(getContext(), R.color.colorTextAccent);
+            tvVariation.setTextColor(textColorAccent);
             llVariationsContainer.addView(tvVariation);
             for (Map.Entry<String, String> translationMeaning : vMap.get(variation).entrySet()) {
                 TextView tvTranslation = new TextView(getContext());
                 tvTranslation.setText(translationMeaning.getKey());
-                tvTranslation.setLayoutParams(paramsSecondLevel);
+                tvTranslation.setLayoutParams(paramsFirstLevel);
                 tvTranslation.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
                 int secondaryTextColor = ContextCompat.getColor(getContext(), R.color.colorTextSecondary);
                 llVariationsContainer.addView(tvTranslation);

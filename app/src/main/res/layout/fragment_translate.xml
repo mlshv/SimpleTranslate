@@ -99,7 +99,7 @@
         android:layout_marginLeft="@dimen/first_level_margin"
         android:layout_toLeftOf="@+id/translate_button_bar"
         android:scrollbars="vertical"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/text_yandex_api_notice"
@@ -113,7 +113,7 @@
         android:layout_alignParentLeft="true"
         android:visibility="invisible"
         android:scrollbars="vertical"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <LinearLayout
         android:id="@+id/error_container"

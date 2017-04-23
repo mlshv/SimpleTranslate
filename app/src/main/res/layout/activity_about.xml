@@ -49,6 +49,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/text_api_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/translate_api_notice"

@@ -124,6 +124,7 @@ public class TranslateFragment extends Fragment {
                     // прячем клавиатуру
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    saveTranslationToHistoryIfReady();
                 }
             }
         });
@@ -167,6 +168,7 @@ public class TranslateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 etTranslateInput.setText("");
+                currentVisibleTranslation = null;
             }
         });
         tvApiNotice.setOnClickListener(new View.OnClickListener() {
@@ -235,12 +237,12 @@ public class TranslateFragment extends Fragment {
 
     private TextWatcher translateInputWatcher = new TextWatcher() {
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void afterTextChanged(Editable s) {
             Log.d(App.tag(this), "onTextChanged: пользователь вводит текст");
             performTranslationTask();
         }
 
-        @Override public void afterTextChanged(Editable s) {}
+        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
         @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
     };
 
@@ -337,6 +339,8 @@ public class TranslateFragment extends Fragment {
 
             llVariationsContainer.removeAllViews();
             llVariationsContainer.addView(variationsView);
+        } else {
+            llVariationsContainer.removeAllViews();
         }
 
         if (!currentVisibleTranslation.getTerm().isEmpty()) {
