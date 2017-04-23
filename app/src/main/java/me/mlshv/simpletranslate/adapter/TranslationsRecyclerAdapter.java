@@ -15,7 +15,6 @@ import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.activities.MainActivity;
-import me.mlshv.simpletranslate.util.SpHelper;
 
 
 public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<TranslationsRecyclerAdapter.ViewHolder> {
@@ -88,10 +87,7 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
         @Override
         public void onClick(View view) {
             Log.d(App.tag(this), "onClick " + getAdapterPosition() + " " + item.toString());
-            SpHelper.saveCurrentTextToTranslate(item.getTerm());
-            SpHelper.saveSourceLangCode(item.getSourceLangCode());
-            SpHelper.saveTargetLangCode(item.getTargetLangCode());
-            mainActivity.goToTranslationFragment();
+            mainActivity.goToTranslationFragmentAndRenderTranslation(item);
         }
     }
 }

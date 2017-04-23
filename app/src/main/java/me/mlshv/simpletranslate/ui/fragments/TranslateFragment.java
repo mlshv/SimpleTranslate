@@ -77,7 +77,25 @@ public class TranslateFragment extends Fragment {
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
 
+        showTranslationIfRequested();
+
         return view;
+    }
+
+    /**
+     * Показывает перевод слова, если пользоваль нажал на перевод в истории/избранном
+     */
+    private void showTranslationIfRequested() {
+        if (getArguments() != null) {
+            String textToTranslate = getArguments().getString("textToTranslate");
+            String sourceLangCode = getArguments().getString("sourceLangCode");
+            String targetLangCode = getArguments().getString("targetLangCode");
+            if (textToTranslate != null && sourceLangCode != null && targetLangCode != null) {
+                setSourceLangCode(sourceLangCode);
+                setTargetLangCode(targetLangCode);
+                textInput.setText(textToTranslate);
+            }
+        }
     }
 
     private void initUi(View view) {
@@ -107,8 +125,6 @@ public class TranslateFragment extends Fragment {
                     // прячем клавиатуру
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    // сохраняем последний введённый текст
-                    SpHelper.saveCurrentTextToTranslate(textInput.getText().toString());
                     // если перевод ещё не запущен, надо его запустить
                     if (translationTask != null && translationTask.getStatus() != AsyncTask.Status.RUNNING) {
                         performTranslationTask();
@@ -163,7 +179,6 @@ public class TranslateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 textInput.setText("");
-                SpHelper.saveCurrentTextToTranslate("");
             }
         });
         apiNoticeText.setOnClickListener(new View.OnClickListener() {
@@ -399,7 +414,6 @@ public class TranslateFragment extends Fragment {
         String target = SpHelper.loadTargetLangCode();
         setSourceLangCode(source);
         setTargetLangCode(target);
-        textInput.setText(SpHelper.loadCurrentTextToTranslate());
         dbManager.open();
     }
 

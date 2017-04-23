@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import me.mlshv.simpletranslate.R;
+import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.fragments.FavoritesFragment;
 import me.mlshv.simpletranslate.ui.fragments.HistoryFragment;
 import me.mlshv.simpletranslate.ui.fragments.SettingsFragment;
@@ -93,9 +94,13 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public void goToTranslationFragment() {
-        if (translateFragment == null)
-            translateFragment = new TranslateFragment();
+    public void goToTranslationFragmentAndRenderTranslation(Translation translation) {
+        translateFragment = new TranslateFragment();
+        Bundle args = new Bundle();
+        args.putString("textToTranslate", translation.getTerm());
+        args.putString("sourceLangCode", translation.getSourceLangCode());
+        args.putString("targetLangCode", translation.getTargetLangCode());
+        translateFragment.setArguments(args);
         goToFragment(translateFragment);
         navigation.getMenu().getItem(0).setChecked(true);
     }
