@@ -8,15 +8,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class TranslationRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public String perform(String translationDirection, String textToTranslate) {
+    public String perform(String translationDirection, String textToTranslate) throws JSONException, IOException {
         URL url;
         String result = null;
         try {
@@ -25,7 +27,6 @@ public class TranslationRequest {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             String responseJson = Util.readStream(in);
             result = getResultFromResponseJson(responseJson);
-        } catch (Exception ignored) {
         } finally {
             if (urlConnection != null)
                 urlConnection.disconnect();
@@ -34,7 +35,8 @@ public class TranslationRequest {
     }
 
     public void cancel() {
-        urlConnection.disconnect();
+        if (urlConnection != null)
+            urlConnection.disconnect();
     }
 
     private String getResultFromResponseJson(String jsonResponse) throws JSONException {

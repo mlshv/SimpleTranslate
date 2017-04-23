@@ -17,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -30,6 +29,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
@@ -37,8 +38,10 @@ import me.mlshv.simpletranslate.R;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.network.TranslationTask;
+import me.mlshv.simpletranslate.network.TranslationTaskResult;
 import me.mlshv.simpletranslate.ui.activities.LangChangeActivity;
 import me.mlshv.simpletranslate.ui.widgets.TranslateInput;
+import me.mlshv.simpletranslate.ui.widgets.TranslationErrorView;
 import me.mlshv.simpletranslate.ui.widgets.TranslationVariationsView;
 import me.mlshv.simpletranslate.util.LangUtil;
 import me.mlshv.simpletranslate.util.SpHelper;
@@ -50,11 +53,13 @@ public class TranslateFragment extends Fragment {
     private TextView translationResultTextView;
     private DbManager dbManager;
 
+    private LinearLayout errorContainer;
     private LinearLayout variationsContainer;
     private ProgressBar translationProgress;
     private CheckBox favoriteCheckbox;
     private Button copyButton;
     private TextView apiNoticeText;
+    private TranslationErrorView errorView;
 
     private TranslationTask translationTask;
     private Translation currentVisibleTranslation;
@@ -76,6 +81,7 @@ public class TranslateFragment extends Fragment {
     }
 
     private void initUi(View view) {
+        errorContainer = (LinearLayout) view.findViewById(R.id.error_container);
         variationsContainer = (LinearLayout) view.findViewById(R.id.variations_container);
         sourceLangLabel = (TextView) view.findViewById(R.id.source_lang);
         targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
@@ -92,13 +98,21 @@ public class TranslateFragment extends Fragment {
     }
 
     private void initListeners(View view) {
+        // фокус на корневой layout говорит нам о том, что пользователь вводил текст
+        // и потом нажал кнопку "Назад" или "Готово". Перевод сохранится в истории, если translationTask завершена
         view.findViewById(R.id.root).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
+                    // прячем клавиатуру
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    saveTranslationToHistory();
+                    // сохраняем последний введённый текст
+                    SpHelper.saveCurrentTextToTranslate(textInput.getText().toString());
+                    // если перевод ещё не запущен, надо его запустить
+                    if (translationTask != null && translationTask.getStatus() != AsyncTask.Status.RUNNING) {
+                        performTranslationTask();
+                    }
                 }
             }
         });
@@ -239,73 +253,132 @@ public class TranslateFragment extends Fragment {
     };
 
     private void performTranslationTask() {
+        // если нет текста, то не надо ничего запускать
+        if (textInput.getText().toString().equals("")) {
+            translationResultTextView.setText("");
+            setViewsStateError();
+            return;
+        }
         // отменяем предыдущий перевод-таск, если есть, и запускаем новый
         if (translationTask != null) translationTask.cancel(true);
         translationTask = new TranslationTask(onTranslationResultCallback);
         // показываем анимацию загрузки и прячем кнопки
-        translationProgress.setVisibility(View.VISIBLE);
-        favoriteCheckbox.setVisibility(View.INVISIBLE);
-        copyButton.setVisibility(View.INVISIBLE);
+        setViewsStateTranslating();
         translationTask.execute(textInput.getText().toString());
     }
 
     private Callable<Void> onTranslationResultCallback = new Callable<Void>() {
         @Override
         public Void call() throws Exception {
-            translationProgress.setVisibility(View.GONE);
-            Translation result = translationTask.get();
-            if (result != null) {
-                renderTranslation(result);
-                currentVisibleTranslation = result;
-                saveTranslationToHistory();
+            TranslationTaskResult result = translationTask.get();
+            if (result.getResult() != null) {
+                currentVisibleTranslation = result.getResult();
+                renderCurrentTranslation();
+                saveTranslationToHistoryIfReady();
             } else {
-                showToast("Не получилось перевести");
+                Exception e = result.getException();
+                if (e instanceof UnknownHostException) {
+                    renderError("Проблема с подключением к translate.yandex.ru. Проверьте интернет-соединение", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            performTranslationTask();
+                        }
+                    });
+                } else if (e instanceof FileNotFoundException) {
+                    renderError("Ключ к API устарел. Обновите приложение", null);
+                }
+                Log.d(App.tag(this), "onTranslationResultCallback: " + result.getException().getClass().getSimpleName());
             }
             return null;
         }
     };
 
-    private void saveTranslationToHistory() {
+    private void renderError(String message, View.OnClickListener onRetryButtonClick) {
+        setViewsStateError();
+        errorContainer.removeView(errorView);
+        errorView = new TranslationErrorView(getContext(), message, onRetryButtonClick);
+        RelativeLayout.LayoutParams errorViewParams =
+                new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+        errorViewParams.addRule(RelativeLayout.RIGHT_OF, R.id.error_container);
+        errorView.setLayoutParams(errorViewParams);
+        errorContainer.addView(errorView);
+    }
+
+    /**
+     * Вызывается в двух случаях: когда пользователь убирает клавиатуру, и когда завершается TranslationTask
+     * Перевод сохраняется в истории, если убрана клавиатура и TranslationTask завершена
+     *
+     * Да, это лучшее, что я смог придумать. Пожалуйста, научите меня как можно делать правильнее
+     */
+    private void saveTranslationToHistoryIfReady() {
         if (currentVisibleTranslation == null || currentVisibleTranslation.getTranslation() == null) return;
-        Log.d(App.tag(this), "saveTranslationToHistory: translationTask.getStatus() == " + translationTask.getStatus());
+        Log.d(App.tag(this), "saveTranslationToHistoryIfReady: translationTask.getStatus() == " + translationTask.getStatus());
         if (!textInput.hasFocus() || translationTask.getStatus() == AsyncTask.Status.FINISHED) {
             if (!currentVisibleTranslation.getTranslation().trim().isEmpty()
                     && !currentVisibleTranslation.getTerm().equals(currentVisibleTranslation.getTranslation())) {
                 currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
                 if (dbManager != null) {
-                    Log.d(App.tag(this), "saveTranslationToHistory: обновляем translation " + currentVisibleTranslation);
+                    Log.d(App.tag(this), "saveTranslationToHistoryIfReady: обновляем translation " + currentVisibleTranslation);
                     dbManager.updateOrInsertTranslation(currentVisibleTranslation);
-                    SpHelper.saveCurrentTextToTranslate(currentVisibleTranslation.getTerm());
                 }
             }
         }
     }
 
-    private void renderTranslation(Translation translation) {
-        translationResultTextView.setText(translation.getTranslation());
+    private void renderCurrentTranslation() {
+        Log.d(App.tag(this), "renderCurrentTranslation: " + currentVisibleTranslation);
+        translationResultTextView.setText(currentVisibleTranslation.getTranslation());
+        errorContainer.removeView(errorView);
 
-        if (translation.getVariations() != null) {
-            Log.d(App.tag(this), "Варианты: " + translation.getVariations().toString());
+        if (!currentVisibleTranslation.getVariations().isEmpty()) {
+            Log.d(App.tag(this), "Варианты: " + currentVisibleTranslation.getVariations().toString());
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             TranslationVariationsView variationsView =
-                    new TranslationVariationsView(this.getActivity(), translation.getVariations());
+                    new TranslationVariationsView(this.getActivity(), currentVisibleTranslation.getVariations());
             variationsView.setLayoutParams(params);
 
             variationsContainer.removeAllViews();
             variationsContainer.addView(variationsView);
         }
 
-        if (!translation.getTerm().isEmpty()) {
-            // показываем кнопки "Избранное" и "Скопировать" а также сообщение об использовании API
-            copyButton.setVisibility(View.VISIBLE);
-            favoriteCheckbox.setVisibility(View.VISIBLE);
-            favoriteCheckbox.setChecked(translation.hasOption(Translation.SAVED_FAVORITES));
-            apiNoticeText.setVisibility(View.VISIBLE);
-        } else {
-            apiNoticeText.setVisibility(View.GONE);
+        if (!currentVisibleTranslation.getTerm().isEmpty()) {
+            // показываем кнопки "Избранное" и "Скопировать", сообщение об использовании API и варианты
+            setViewsStateTranslated();
         }
+    }
+
+    private void setViewsStateTranslating() {
+        Log.d(App.tag(this), "setViewsStateTranslating");
+        translationProgress.setVisibility(View.VISIBLE);
+        variationsContainer.setVisibility(View.INVISIBLE);
+        favoriteCheckbox.setVisibility(View.INVISIBLE);
+        copyButton.setVisibility(View.INVISIBLE);
+        apiNoticeText.setVisibility(View.INVISIBLE);
+    }
+
+    private void setViewsStateTranslated() {
+        Log.d(App.tag(this), "setViewsStateTranslated");
+        translationProgress.setVisibility(View.INVISIBLE);
+        copyButton.setVisibility(View.VISIBLE);
+        favoriteCheckbox.setVisibility(View.VISIBLE);
+        favoriteCheckbox.setChecked(currentVisibleTranslation.hasOption(Translation.SAVED_FAVORITES));
+        apiNoticeText.setVisibility(View.VISIBLE);
+        variationsContainer.setVisibility(View.VISIBLE);
+        translationResultTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void setViewsStateError() {
+        Log.d(App.tag(this), "setViewsStateError");
+        translationProgress.setVisibility(View.INVISIBLE);
+        favoriteCheckbox.setVisibility(View.INVISIBLE);
+        copyButton.setVisibility(View.INVISIBLE);
+        apiNoticeText.setVisibility(View.INVISIBLE);
+        translationResultTextView.setVisibility(View.INVISIBLE);
+        variationsContainer.setVisibility(View.INVISIBLE);
     }
 
     private void clipboardCopy(String string) {

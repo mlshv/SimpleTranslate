@@ -17,7 +17,7 @@ public class TranslationVariationsRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public TranslationVariations perform(String translationDirection, String textToLookup) {
+    public TranslationVariations perform(String translationDirection, String textToLookup) throws JSONException {
         URL url;
         TranslationVariations result = null;
         try {
@@ -27,8 +27,6 @@ public class TranslationVariationsRequest {
             String responseJson = Util.readStream(in);
             result = getResultFromResponseJson(responseJson);
         } catch (IOException ignored) {
-        } catch (JSONException e) {
-            e.printStackTrace();
         } finally {
             if (urlConnection != null)
                 urlConnection.disconnect();
@@ -37,7 +35,8 @@ public class TranslationVariationsRequest {
     }
 
     public void cancel() {
-        urlConnection.disconnect();
+        if (urlConnection != null)
+            urlConnection.disconnect();
     }
 
     private TranslationVariations getResultFromResponseJson(String responseJson) throws JSONException {

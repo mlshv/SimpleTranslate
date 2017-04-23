@@ -31,12 +31,13 @@ public class TranslationVariations {
      * Ленивое свойство
      */
     public Map<String, Map<String, String>> getAsMap() {
-        if (mapValue == null) {
+        if (mapValue == null && jsonData != null) {
             try {
                 initMapValue();
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 Log.e(App.tag(this), "TranslationVariations: исключение при парсинге JSON. " +
                         "Варианты перевода не инициализированы", e);
+                Log.e(App.tag(this), "jsonData=" + jsonData);
             }
         }
         return mapValue;
@@ -84,11 +85,11 @@ public class TranslationVariations {
     }
 
     public boolean isEmpty() {
-        return getAsMap().isEmpty();
+        return getAsMap() == null || getAsMap().isEmpty();
     }
 
     @Override
     public String toString() {
-        return getAsMap().toString();
+        return String.valueOf(getAsMap());
     }
 }

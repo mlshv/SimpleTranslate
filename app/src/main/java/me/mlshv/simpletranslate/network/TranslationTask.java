@@ -4,6 +4,8 @@ package me.mlshv.simpletranslate.network;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONException;
+
 import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
@@ -12,7 +14,7 @@ import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
 import me.mlshv.simpletranslate.util.SpHelper;
 
-public class TranslationTask extends AsyncTask<Object, String, Translation> {
+public class TranslationTask extends AsyncTask<Object, String, TranslationTaskResult> {
     private TranslationRequest translationRequest;
     private TranslationVariationsRequest variationsRequest;
     private DbManager dbManager = new DbManager(App.getInstance()).open();
@@ -28,7 +30,7 @@ public class TranslationTask extends AsyncTask<Object, String, Translation> {
     }
 
     @Override
-    protected Translation doInBackground(Object... params) {
+    protected TranslationTaskResult doInBackground(Object... params) {
         Log.d(App.tag(this), "TranslationTask запущена");
         String textToTranslate = (String) params[0];
         String source = SpHelper.loadSourceLangCode();
@@ -36,19 +38,28 @@ public class TranslationTask extends AsyncTask<Object, String, Translation> {
         Translation t = dbManager.tryGetFromCache(textToTranslate, source + "-" + target);
         if (t != null) {
             Log.d(App.tag(this), "Достал из кэша " + t);
-            return t;
+            return new TranslationTaskResult(t);
         }
         translationRequest = new TranslationRequest();
         variationsRequest = new TranslationVariationsRequest();
-        String result = translationRequest.perform(source + "-" + target, textToTranslate);
-        TranslationVariations variations = variationsRequest.perform(source + "-" + target, textToTranslate);
-        t = new Translation(source + "-" + target, textToTranslate, result, variations);
+        String translationResultString;
+        try {
+            translationResultString = translationRequest.perform(source + "-" + target, textToTranslate);
+        } catch (Exception e) {
+            Log.d(App.tag(this), "Исключение при загрузке перевода " + e);
+            return new TranslationTaskResult(e);
+        }
+        TranslationVariations variations = null;
+        try {
+            variations = variationsRequest.perform(source + "-" + target, textToTranslate);
+        } catch (JSONException ignored) {} // не получилось найти варианты перевода, игнорируем
+        t = new Translation(source + "-" + target, textToTranslate, translationResultString, variations);
         dbManager.updateOrInsertTranslation(t);
-        return t;
+        return new TranslationTaskResult(t);
     }
 
     @Override
-    protected void onPostExecute(Translation result) {
+    protected void onPostExecute(TranslationTaskResult result) {
         Log.d(App.tag(this), "TranslationTask завершена");
         try {
             resultCallback.call();

@@ -13,4 +13,5 @@
     <string name="translate_api_notice"><u>Переведено сервисом «Яндекс.Переводчик»</u></string>
     <string name="dict_api_notice"><u>Реализовано с помощью сервиса «Яндекс.Словарь»</u></string>
     <string name="please_wait_for_langs_to_load">Пожалуйста, дождитесь загрузки списка языков</string>
+    <string name="retry_button_text">Повторить</string>
 </resources>

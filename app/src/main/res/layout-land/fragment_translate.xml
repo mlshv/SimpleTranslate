@@ -13,7 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:orientation="horizontal"
-        android:id="@+id/relativeLayout"
+        android:id="@+id/action_bar"
         android:paddingLeft="@dimen/horizontal_padding"
         android:paddingRight="@dimen/horizontal_padding"
         android:paddingStart="@dimen/horizontal_padding"
@@ -73,7 +73,7 @@
         android:lines="6"
         android:scrollHorizontally="false"
         android:background="@drawable/translate_input_border"
-        android:layout_below="@+id/relativeLayout"
+        android:layout_below="@+id/action_bar"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
@@ -118,8 +118,19 @@
         android:layout_toEndOf="@+id/strut" />
 
     <LinearLayout
+        android:id="@+id/error_container"
         android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/action_bar"
+        android:layout_alignStart="@+id/strut"
+        android:layout_marginTop="@dimen/horizontal_margin"
+        android:layout_marginLeft="@dimen/second_level_text_margin"
+        android:layout_marginRight="@dimen/second_level_text_margin" />
+
+    <LinearLayout
         android:id="@+id/variations_container"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/yandex_api_notice"
@@ -132,7 +143,7 @@
         android:layout_height="26dp"
         android:padding="0dp"
         android:layout_marginRight="@dimen/first_level_margin"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:indeterminate="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/translate_button_bar" />
