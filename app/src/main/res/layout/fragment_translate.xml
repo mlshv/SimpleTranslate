@@ -151,7 +151,6 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/edittext_translate"
         android:orientation="vertical"
-        android:visibility="visible"
         android:padding="0dp"
         android:layout_marginRight="@dimen/first_level_margin">
 
@@ -162,6 +161,7 @@
             style="?android:attr/starStyle"
             android:padding="0dp"
             android:clickable="true"
+            android:visibility="invisible"
             android:theme="@style/favoriteCheckboxStyle" />
 
         <Button
@@ -170,6 +170,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_gravity="right"
+            android:visibility="invisible"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:background="@drawable/ic_content_copy_black_24dp" />
     </LinearLayout>

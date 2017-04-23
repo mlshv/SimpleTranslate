@@ -1,6 +1,7 @@
 package me.mlshv.simpletranslate.ui.widgets;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,7 +13,6 @@ import me.mlshv.simpletranslate.App;
 
 
 public class TranslateInput extends android.support.v7.widget.AppCompatEditText {
-    Callable<Void> backButtonPressListener;
 
     public TranslateInput(Context context) {
         super(context);
@@ -35,19 +35,9 @@ public class TranslateInput extends android.support.v7.widget.AppCompatEditText 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            // Пользователь нажал кнопку "назад", вызываем функцию-listener
-            if (backButtonPressListener != null) {
-                try {
-                    backButtonPressListener.call();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            // Пользователь нажал кнопку "назад", снимаем фокус
+            this.clearFocus();
         }
         return false;
-    }
-
-    public void setOnBackButtonPressListener(Callable<Void> listener) {
-        this.backButtonPressListener = listener;
     }
 }

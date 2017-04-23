@@ -142,14 +142,7 @@ public class TranslateFragment extends Fragment {
             }
         });
         etTranslateInput.addTextChangedListener(translateInputWatcher);
-        etTranslateInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
         etTranslateInput.setOnEditorActionListener(translateInputDoneButtonListener);
-        etTranslateInput.setOnBackButtonPressListener(new Callable<Void>() {
-            @Override public Void call() throws Exception {
-                etTranslateInput.clearFocus();
-                return null;
-            }
-        });
         tvTranslation.setMovementMethod(new ScrollingMovementMethod());
         chkFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -226,17 +219,6 @@ public class TranslateFragment extends Fragment {
             setSourceLangCode(newSourceLangCode);
             setTargetLangCode(newTargetLangCode);
             performTranslationTask();
-        }
-    };
-
-    private View.OnFocusChangeListener translateInputOnFocusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View view, boolean hasFocus) {
-            if (!hasFocus) {
-                // говорим, что пользователь закончил ввод
-                // убираем фокус с textInput'a (фокус переходи на корневой layout, где стоит listener)
-                etTranslateInput.clearFocus();
-            }
         }
     };
 
@@ -406,7 +388,6 @@ public class TranslateFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(App.tag(this), "onResume");
         // обновляем направление перевода и ставим в поле ввода последний переводимый текст
         String source = Util.SPrefs.loadSourceLangCode();
         String target = Util.SPrefs.loadTargetLangCode();
