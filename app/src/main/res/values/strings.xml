@@ -14,4 +14,9 @@
     <string name="dict_api_notice"><u>Реализовано с помощью сервиса «Яндекс.Словарь»</u></string>
     <string name="please_wait_for_langs_to_load">Пожалуйста, дождитесь загрузки списка языков</string>
     <string name="retry_button_text">Повторить</string>
+    <string name="clear_cache">Очистить кэш</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="clear_favorites">Очистить избранное</string>
+    <string name="update_lang_list">Обновить список языков</string>
+    <string name="about_the_app">О приложении</string>
 </resources>

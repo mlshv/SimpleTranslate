@@ -35,37 +35,37 @@ public class TranslationsRecyclerAdapter extends CursorRecyclerViewAdapter<Trans
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.translations_list_item, parent, false);
+                .inflate(R.layout.row_translations_list, parent, false);
         return new ViewHolder(itemView);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Translation item;
-        private TextView termLabel, translationLabel, direcionLabel;
-        private CheckBox favoriteCheckbox;
+        private TextView tvTerm, tvTranslation, rvDirection;
+        private CheckBox chkFavorite;
 
         ViewHolder(View itemView) {
             super(itemView);
-            termLabel = (TextView) itemView.findViewById(R.id.list_term_label);
-            translationLabel = (TextView) itemView.findViewById(R.id.list_translation_label);
-            direcionLabel = (TextView) itemView.findViewById(R.id.list_direcion_label);
-            favoriteCheckbox = (CheckBox) itemView.findViewById(R.id.favorite_checkbox);
-            favoriteCheckbox.setOnCheckedChangeListener(favoriteCheckListener);
+            tvTerm = (TextView) itemView.findViewById(R.id.list_term_label);
+            tvTranslation = (TextView) itemView.findViewById(R.id.list_translation_label);
+            rvDirection = (TextView) itemView.findViewById(R.id.list_direcion_label);
+            chkFavorite = (CheckBox) itemView.findViewById(R.id.favorite_checkbox);
+            chkFavorite.setOnCheckedChangeListener(favoriteCheckListener);
             itemView.setOnClickListener(this);
         }
 
         void setItem(Translation item) {
             this.item = item;
-            termLabel.setText(item.getTerm());
-            translationLabel.setText(item.getTranslation());
-            direcionLabel.setText(item.getDirection());
-            favoriteCheckbox.setOnCheckedChangeListener(null); // убираем listener, чтобы он не вызывался при отрисовке
+            tvTerm.setText(item.getTerm());
+            tvTranslation.setText(item.getTranslation());
+            rvDirection.setText(item.getDirection());
+            chkFavorite.setOnCheckedChangeListener(null); // убираем listener, чтобы он не вызывался при отрисовке
             if (item.hasOption(Translation.SAVED_FAVORITES)) {
-                favoriteCheckbox.setChecked(true);
+                chkFavorite.setChecked(true);
             } else {
-                favoriteCheckbox.setChecked(false);
+                chkFavorite.setChecked(false);
             }
-            favoriteCheckbox.setOnCheckedChangeListener(favoriteCheckListener);
+            chkFavorite.setOnCheckedChangeListener(favoriteCheckListener);
         }
 
         private CompoundButton.OnCheckedChangeListener favoriteCheckListener = new CompoundButton.OnCheckedChangeListener() {

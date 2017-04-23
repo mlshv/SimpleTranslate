@@ -15,9 +15,7 @@
         android:orientation="horizontal"
         android:id="@+id/action_bar"
         android:paddingLeft="@dimen/horizontal_padding"
-        android:paddingRight="@dimen/horizontal_padding"
-        android:paddingStart="@dimen/horizontal_padding"
-        android:paddingEnd="@dimen/horizontal_padding">
+        android:paddingRight="@dimen/horizontal_padding">
 
         <TextView
             android:id="@+id/source_lang"
@@ -29,8 +27,10 @@
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textColor="@color/colorTextPrimary"
             android:textSize="20sp"
+            android:lines="1"
+            android:ellipsize="end"
             android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/change_language_button"
+            android:layout_toLeftOf="@+id/change_language_button"
             android:layout_alignParentBottom="true" />
 
         <Button
@@ -54,8 +54,10 @@
             android:textAlignment="center"
             android:textColor="@color/colorTextPrimary"
             android:textSize="20sp"
+            android:lines="1"
+            android:ellipsize="end"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/change_language_button"
+            android:layout_toRightOf="@+id/change_language_button"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
@@ -70,7 +72,7 @@
         android:background="@drawable/translate_input_border"
         android:layout_margin="@dimen/first_level_margin"
         android:layout_below="@+id/action_bar"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
@@ -92,9 +94,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/translate_input"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="@dimen/first_level_margin"
-        android:layout_toStartOf="@+id/translate_button_bar"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/first_level_margin"
+        android:layout_toLeftOf="@+id/translate_button_bar"
         android:scrollbars="vertical"
         android:textSize="20sp" />
 
@@ -104,9 +106,10 @@
         android:layout_height="wrap_content"
         android:text="@string/translate_api_notice"
         android:layout_below="@+id/translation_result_text"
-        android:layout_toStartOf="@+id/translate_button_bar"
-        android:layout_marginStart="@dimen/first_level_margin"
-        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/translate_button_bar"
+        android:layout_marginLeft="@dimen/first_level_margin"
+        android:layout_marginRight="@dimen/first_level_margin"
+        android:layout_alignParentLeft="true"
         android:visibility="invisible"
         android:scrollbars="vertical"
         android:textSize="20sp" />
@@ -126,8 +129,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/yandex_api_notice"
-        android:layout_alignStart="@+id/translation_result_text"
-        android:layout_toStartOf="@+id/translate_button_bar" />
+        android:layout_alignLeft="@+id/translation_result_text"
+        android:layout_toLeftOf="@+id/translate_button_bar" />
 
     <ProgressBar
         android:id="@+id/translation_progress"
@@ -136,20 +139,20 @@
         android:padding="0dp"
         android:visibility="invisible"
         android:indeterminate="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_below="@+id/translate_input"
-        android:layout_marginEnd="@dimen/first_level_margin" />
+        android:layout_marginRight="@dimen/first_level_margin" />
 
     <LinearLayout
         android:id="@+id/translate_button_bar"
         android:layout_width="30dp"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_below="@+id/translate_input"
         android:orientation="vertical"
         android:visibility="visible"
         android:padding="0dp"
-        android:layout_marginEnd="@dimen/first_level_margin">
+        android:layout_marginRight="@dimen/first_level_margin">
 
         <CheckBox
             android:id="@+id/favorite_checkbox"

@@ -15,11 +15,11 @@ import java.net.URL;
 
 import me.mlshv.simpletranslate.Util;
 
-public class TranslationRequest {
+class TranslationRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public String perform(String translationDirection, String textToTranslate) throws JSONException, IOException {
+    String perform(String translationDirection, String textToTranslate) throws JSONException, IOException {
         URL url;
         String result = null;
         try {
@@ -35,7 +35,7 @@ public class TranslationRequest {
         return result;
     }
 
-    public void cancel() {
+    void cancel() {
         if (urlConnection != null)
             urlConnection.disconnect();
     }

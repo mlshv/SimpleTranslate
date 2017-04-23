@@ -16,7 +16,7 @@ import me.mlshv.simpletranslate.adapter.TranslationsRecyclerAdapter;
 
 public class HistoryFragment extends Fragment {
     private DbManager dbManager;
-    private RecyclerView historyList;
+    private RecyclerView rvHistory;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,11 +27,11 @@ public class HistoryFragment extends Fragment {
     }
 
     private void initFragment(View view) {
-        historyList = (RecyclerView) view.findViewById(R.id.history_list);
-        historyList.setLayoutManager(new LinearLayoutManager(App.getInstance()));
+        rvHistory = (RecyclerView) view.findViewById(R.id.history_list);
+        rvHistory.setLayoutManager(new LinearLayoutManager(App.getInstance()));
         dbManager = new DbManager(App.getInstance());
         dbManager.open();
-        historyList.setAdapter(new TranslationsRecyclerAdapter(
+        rvHistory.setAdapter(new TranslationsRecyclerAdapter(
                         dbManager.fetchHistory(),
                         ((MainActivity) this.getActivity())));
     }
@@ -40,9 +40,9 @@ public class HistoryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         dbManager.open();
-        if (historyList != null) {
-            ((TranslationsRecyclerAdapter) historyList.getAdapter()).changeCursor(dbManager.fetchHistory());
-            historyList.getAdapter().notifyDataSetChanged();
+        if (rvHistory != null) {
+            ((TranslationsRecyclerAdapter) rvHistory.getAdapter()).changeCursor(dbManager.fetchHistory());
+            rvHistory.getAdapter().notifyDataSetChanged();
         }
     }
 
@@ -55,7 +55,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        historyList = null;
+        rvHistory = null;
         dbManager = null;
     }
 }

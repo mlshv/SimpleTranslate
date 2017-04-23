@@ -46,18 +46,18 @@ import me.mlshv.simpletranslate.ui.widgets.TranslationErrorView;
 import me.mlshv.simpletranslate.ui.widgets.TranslationVariationsView;
 
 public class TranslateFragment extends Fragment {
-    private TextView sourceLangLabel;
-    private TextView targetLangLabel;
-    private TranslateInput textInput;
-    private TextView translationResultTextView;
+    private TextView tvSourceLang;
+    private TextView tvTargetLang;
+    private TranslateInput etTranslateInput;
+    private TextView tvTranslation;
     private DbManager dbManager;
 
-    private LinearLayout errorContainer;
-    private LinearLayout variationsContainer;
+    private LinearLayout llErrorContainer;
+    private LinearLayout llVariationsContainer;
     private ProgressBar translationProgress;
-    private CheckBox favoriteCheckbox;
-    private Button copyButton;
-    private TextView apiNoticeText;
+    private CheckBox chkFavorite;
+    private Button btnCopy;
+    private TextView tvApiNotice;
     private TranslationErrorView errorView;
 
     private TranslationTask translationTask;
@@ -92,26 +92,26 @@ public class TranslateFragment extends Fragment {
             if (textToTranslate != null && sourceLangCode != null && targetLangCode != null) {
                 setSourceLangCode(sourceLangCode);
                 setTargetLangCode(targetLangCode);
-                textInput.setText(textToTranslate);
+                etTranslateInput.setText(textToTranslate);
             }
         }
     }
 
     private void initUi(View view) {
-        errorContainer = (LinearLayout) view.findViewById(R.id.error_container);
-        variationsContainer = (LinearLayout) view.findViewById(R.id.variations_container);
-        sourceLangLabel = (TextView) view.findViewById(R.id.source_lang);
-        targetLangLabel = (TextView) view.findViewById(R.id.target_lang);
-        textInput = (TranslateInput) view.findViewById(R.id.translate_input);
+        llErrorContainer = (LinearLayout) view.findViewById(R.id.error_container);
+        llVariationsContainer = (LinearLayout) view.findViewById(R.id.variations_container);
+        tvSourceLang = (TextView) view.findViewById(R.id.source_lang);
+        tvTargetLang = (TextView) view.findViewById(R.id.target_lang);
+        etTranslateInput = (TranslateInput) view.findViewById(R.id.translate_input);
         // ставим кнопку "готово" на клаве вместо кнопки новой строки и делаем её не fullscreen, убираем подсказки
         // почему-то через XML не ставится
-        textInput.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        textInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        translationResultTextView = (TextView) view.findViewById(R.id.translation_result_text);
+        etTranslateInput.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        etTranslateInput.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        tvTranslation = (TextView) view.findViewById(R.id.translation_result_text);
         translationProgress = (ProgressBar) view.findViewById(R.id.translation_progress);
-        favoriteCheckbox = (CheckBox) view.findViewById(R.id.favorite_checkbox);
-        copyButton = (Button) view.findViewById(R.id.translation_copy_button);
-        apiNoticeText = (TextView) view.findViewById(R.id.yandex_api_notice);
+        chkFavorite = (CheckBox) view.findViewById(R.id.favorite_checkbox);
+        btnCopy = (Button) view.findViewById(R.id.translation_copy_button);
+        tvApiNotice = (TextView) view.findViewById(R.id.yandex_api_notice);
     }
 
     private void initListeners(View view) {
@@ -133,29 +133,29 @@ public class TranslateFragment extends Fragment {
         });
         Button changeLangButton = (Button) view.findViewById(R.id.change_language_button);
         changeLangButton.setOnClickListener(changeLangButtonOnClickListener);
-        sourceLangLabel.setOnClickListener(new View.OnClickListener() {
+        tvSourceLang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 chooseLanguage(REQUEST_CHANGE_SOURCE_LANG);
             }
         });
-        targetLangLabel.setOnClickListener(new View.OnClickListener() {
+        tvTargetLang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 chooseLanguage(REQUEST_CHANGE_TARGET_LANG);
             }
         });
-        textInput.addTextChangedListener(translateInputWatcher);
-        textInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
-        textInput.setOnEditorActionListener(translateInputDoneButtonListener);
-        textInput.setOnBackButtonPressListener(new Callable<Void>() {
+        etTranslateInput.addTextChangedListener(translateInputWatcher);
+        etTranslateInput.setOnFocusChangeListener(translateInputOnFocusChangeListener);
+        etTranslateInput.setOnEditorActionListener(translateInputDoneButtonListener);
+        etTranslateInput.setOnBackButtonPressListener(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                textInput.clearFocus();
+                etTranslateInput.clearFocus();
                 return null;
             }
         });
-        translationResultTextView.setMovementMethod(new ScrollingMovementMethod());
-        favoriteCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        tvTranslation.setMovementMethod(new ScrollingMovementMethod());
+        chkFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
@@ -166,10 +166,10 @@ public class TranslateFragment extends Fragment {
                 dbManager.insertTranslation(currentVisibleTranslation);
             }
         });
-        copyButton.setOnClickListener(new View.OnClickListener() {
+        btnCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clipboardCopy(translationResultTextView.getText().toString());
+                clipboardCopy(tvTranslation.getText().toString());
                 showToast("Перевод скопирован");
             }
         });
@@ -177,10 +177,10 @@ public class TranslateFragment extends Fragment {
         translationClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                textInput.setText("");
+                etTranslateInput.setText("");
             }
         });
-        apiNoticeText.setOnClickListener(new View.OnClickListener() {
+        tvApiNotice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://translate.yandex.ru"));
@@ -191,13 +191,13 @@ public class TranslateFragment extends Fragment {
 
     private void setSourceLangCode(String langCode) {
         String langName = Util.Langs.getNameByCode(langCode);
-        sourceLangLabel.setText(langName);
+        tvSourceLang.setText(langName);
         Util.SPrefs.saveSourceLangCode(langCode);
     }
 
     private void setTargetLangCode(String langCode) {
         String langName = Util.Langs.getNameByCode(langCode);
-        targetLangLabel.setText(langName);
+        tvTargetLang.setText(langName);
         Util.SPrefs.saveTargetLangCode(langCode);
     }
 
@@ -239,7 +239,7 @@ public class TranslateFragment extends Fragment {
             if (!hasFocus) {
                 // говорим, что пользователь закончил ввод
                 // убираем фокус с textInput'a (фокус переходи на корневой layout, где стоит listener)
-                textInput.clearFocus();
+                etTranslateInput.clearFocus();
             }
         }
     };
@@ -249,7 +249,7 @@ public class TranslateFragment extends Fragment {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                textInput.clearFocus();
+                etTranslateInput.clearFocus();
             }
             return false;
         }
@@ -268,8 +268,8 @@ public class TranslateFragment extends Fragment {
 
     private void performTranslationTask() {
         // если нет текста, то не надо ничего запускать
-        if (textInput.getText().toString().equals("")) {
-            translationResultTextView.setText("");
+        if (etTranslateInput.getText().toString().equals("")) {
+            tvTranslation.setText("");
             setViewsStateError();
             return;
         }
@@ -278,7 +278,7 @@ public class TranslateFragment extends Fragment {
         translationTask = new TranslationTask(onTranslationResultCallback);
         // показываем анимацию загрузки и прячем кнопки
         setViewsStateTranslating();
-        translationTask.execute(textInput.getText().toString());
+        translationTask.execute(etTranslateInput.getText().toString());
     }
 
     private Callable<Void> onTranslationResultCallback = new Callable<Void>() {
@@ -309,7 +309,7 @@ public class TranslateFragment extends Fragment {
 
     private void renderError(String message, View.OnClickListener onRetryButtonClick) {
         setViewsStateError();
-        errorContainer.removeView(errorView);
+        llErrorContainer.removeView(errorView);
         errorView = new TranslationErrorView(getContext(), message, onRetryButtonClick);
         RelativeLayout.LayoutParams errorViewParams =
                 new RelativeLayout.LayoutParams(
@@ -317,7 +317,7 @@ public class TranslateFragment extends Fragment {
                         ViewGroup.LayoutParams.MATCH_PARENT);
         errorViewParams.addRule(RelativeLayout.RIGHT_OF, R.id.error_container);
         errorView.setLayoutParams(errorViewParams);
-        errorContainer.addView(errorView);
+        llErrorContainer.addView(errorView);
     }
 
     /**
@@ -329,7 +329,7 @@ public class TranslateFragment extends Fragment {
     private void saveTranslationToHistoryIfReady() {
         if (currentVisibleTranslation == null || currentVisibleTranslation.getTranslation() == null) return;
         Log.d(App.tag(this), "saveTranslationToHistoryIfReady: translationTask.getStatus() == " + translationTask.getStatus());
-        if (!textInput.hasFocus() || translationTask.getStatus() == AsyncTask.Status.FINISHED) {
+        if (!etTranslateInput.hasFocus() || translationTask.getStatus() == AsyncTask.Status.FINISHED) {
             if (!currentVisibleTranslation.getTranslation().trim().isEmpty()
                     && !currentVisibleTranslation.getTerm().equals(currentVisibleTranslation.getTranslation())) {
                 currentVisibleTranslation.addStoreOption(Translation.SAVED_HISTORY);
@@ -343,8 +343,8 @@ public class TranslateFragment extends Fragment {
 
     private void renderCurrentTranslation() {
         Log.d(App.tag(this), "renderCurrentTranslation: " + currentVisibleTranslation);
-        translationResultTextView.setText(currentVisibleTranslation.getTranslation());
-        errorContainer.removeView(errorView);
+        tvTranslation.setText(currentVisibleTranslation.getTranslation());
+        llErrorContainer.removeView(errorView);
 
         if (!currentVisibleTranslation.getVariations().isEmpty()) {
             Log.d(App.tag(this), "Варианты: " + currentVisibleTranslation.getVariations().toString());
@@ -355,8 +355,8 @@ public class TranslateFragment extends Fragment {
                     new TranslationVariationsView(this.getActivity(), currentVisibleTranslation.getVariations());
             variationsView.setLayoutParams(params);
 
-            variationsContainer.removeAllViews();
-            variationsContainer.addView(variationsView);
+            llVariationsContainer.removeAllViews();
+            llVariationsContainer.addView(variationsView);
         }
 
         if (!currentVisibleTranslation.getTerm().isEmpty()) {
@@ -368,31 +368,31 @@ public class TranslateFragment extends Fragment {
     private void setViewsStateTranslating() {
         Log.d(App.tag(this), "setViewsStateTranslating");
         translationProgress.setVisibility(View.VISIBLE);
-        variationsContainer.setVisibility(View.INVISIBLE);
-        favoriteCheckbox.setVisibility(View.INVISIBLE);
-        copyButton.setVisibility(View.INVISIBLE);
-        apiNoticeText.setVisibility(View.INVISIBLE);
+        llVariationsContainer.setVisibility(View.INVISIBLE);
+        chkFavorite.setVisibility(View.INVISIBLE);
+        btnCopy.setVisibility(View.INVISIBLE);
+        tvApiNotice.setVisibility(View.INVISIBLE);
     }
 
     private void setViewsStateTranslated() {
         Log.d(App.tag(this), "setViewsStateTranslated");
         translationProgress.setVisibility(View.INVISIBLE);
-        copyButton.setVisibility(View.VISIBLE);
-        favoriteCheckbox.setVisibility(View.VISIBLE);
-        favoriteCheckbox.setChecked(currentVisibleTranslation.hasOption(Translation.SAVED_FAVORITES));
-        apiNoticeText.setVisibility(View.VISIBLE);
-        variationsContainer.setVisibility(View.VISIBLE);
-        translationResultTextView.setVisibility(View.VISIBLE);
+        btnCopy.setVisibility(View.VISIBLE);
+        chkFavorite.setVisibility(View.VISIBLE);
+        chkFavorite.setChecked(currentVisibleTranslation.hasOption(Translation.SAVED_FAVORITES));
+        tvApiNotice.setVisibility(View.VISIBLE);
+        llVariationsContainer.setVisibility(View.VISIBLE);
+        tvTranslation.setVisibility(View.VISIBLE);
     }
 
     private void setViewsStateError() {
         Log.d(App.tag(this), "setViewsStateError");
         translationProgress.setVisibility(View.INVISIBLE);
-        favoriteCheckbox.setVisibility(View.INVISIBLE);
-        copyButton.setVisibility(View.INVISIBLE);
-        apiNoticeText.setVisibility(View.INVISIBLE);
-        translationResultTextView.setVisibility(View.INVISIBLE);
-        variationsContainer.setVisibility(View.INVISIBLE);
+        chkFavorite.setVisibility(View.INVISIBLE);
+        btnCopy.setVisibility(View.INVISIBLE);
+        tvApiNotice.setVisibility(View.INVISIBLE);
+        tvTranslation.setVisibility(View.INVISIBLE);
+        llVariationsContainer.setVisibility(View.INVISIBLE);
     }
 
     private void clipboardCopy(String string) {

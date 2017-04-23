@@ -7,11 +7,11 @@ public class TranslationTaskResult {
     private Translation result;
     private Exception exception;
 
-    public TranslationTaskResult(Translation result) {
+    TranslationTaskResult(Translation result) {
         this.result = result;
     }
 
-    public TranslationTaskResult(Exception exception) {
+    TranslationTaskResult(Exception exception) {
         this.exception = exception;
     }
 

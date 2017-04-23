@@ -14,11 +14,11 @@ import java.net.URL;
 import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
 
-public class TranslationVariationsRequest {
+class TranslationVariationsRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public TranslationVariations perform(String translationDirection, String textToLookup) throws JSONException {
+    TranslationVariations perform(String translationDirection, String textToLookup) throws JSONException {
         URL url;
         TranslationVariations result = null;
         try {
@@ -35,7 +35,7 @@ public class TranslationVariationsRequest {
         return result;
     }
 
-    public void cancel() {
+    void cancel() {
         if (urlConnection != null)
             urlConnection.disconnect();
     }

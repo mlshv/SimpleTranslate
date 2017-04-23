@@ -18,11 +18,11 @@ import java.util.List;
 import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.model.Lang;
 
-public class LangsLoadRequest {
+class LangsLoadRequest {
     private HttpURLConnection urlConnection = null;
 
     @Nullable
-    public List<Lang> perform() {
+    List<Lang> perform() {
         URL url;
         List<Lang> result = null;
         try {
@@ -39,7 +39,7 @@ public class LangsLoadRequest {
         return result;
     }
 
-    public void cancel() {
+    void cancel() {
         urlConnection.disconnect();
     }
 

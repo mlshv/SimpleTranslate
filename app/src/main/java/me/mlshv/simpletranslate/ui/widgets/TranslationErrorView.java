@@ -23,15 +23,15 @@ public class TranslationErrorView extends LinearLayout {
 
     public void addRetryButton(OnClickListener onRetryButtonClick) {
         String retryButtonText = getContext().getResources().getString(R.string.retry_button_text);
-        Button retryButton = new Button(getContext());
-        retryButton.setOnClickListener(onRetryButtonClick);
-        retryButton.setText(retryButtonText);
+        Button btnRetry = new Button(getContext());
+        btnRetry.setOnClickListener(onRetryButtonClick);
+        btnRetry.setText(retryButtonText);
         RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         buttonParams.addRule(RelativeLayout.BELOW, R.id.error_message);
-        retryButton.setLayoutParams(buttonParams);
-        ((RelativeLayout) findViewById(R.id.error_root)).addView(retryButton);
+        btnRetry.setLayoutParams(buttonParams);
+        ((RelativeLayout) findViewById(R.id.error_root)).addView(btnRetry);
     }
 
     public TranslationErrorView(Context context, String message, @Nullable View.OnClickListener onRetryButtonClick) {

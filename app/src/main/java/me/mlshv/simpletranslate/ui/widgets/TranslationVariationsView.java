@@ -37,8 +37,8 @@ public class TranslationVariationsView extends ScrollView {
     }
 
     private void initView(TranslationVariations variations) {
-        LinearLayout variationsContainer = new LinearLayout(getContext());
-        variationsContainer.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout llVariationsContainer = new LinearLayout(getContext());
+        llVariationsContainer.setOrientation(LinearLayout.VERTICAL);
 
         // параметры для текстовых view
         LinearLayout.LayoutParams paramsFirstLevel = new LinearLayout.LayoutParams(
@@ -52,32 +52,32 @@ public class TranslationVariationsView extends ScrollView {
 
         Map<String, Map<String, String>> vMap = variations.getAsMap();
         for (String variation : vMap.keySet()) {
-            TextView variationView = new TextView(getContext());
-            variationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FIRST_LEVEL_TEXT_SIZE);
-            variationView.setText(variation);
-            variationView.setLayoutParams(paramsFirstLevel);
-            variationsContainer.addView(variationView);
+            TextView tvVariation = new TextView(getContext());
+            tvVariation.setTextSize(TypedValue.COMPLEX_UNIT_SP, FIRST_LEVEL_TEXT_SIZE);
+            tvVariation.setText(variation);
+            tvVariation.setLayoutParams(paramsFirstLevel);
+            llVariationsContainer.addView(tvVariation);
             for (Map.Entry<String, String> translationMeaning : vMap.get(variation).entrySet()) {
-                TextView translationView = new TextView(getContext());
-                translationView.setText(translationMeaning.getKey());
-                translationView.setLayoutParams(paramsSecondLevel);
-                translationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
+                TextView tvTranslation = new TextView(getContext());
+                tvTranslation.setText(translationMeaning.getKey());
+                tvTranslation.setLayoutParams(paramsSecondLevel);
+                tvTranslation.setTextSize(TypedValue.COMPLEX_UNIT_SP, SECOND_LEVEL_TEXT_SIZE);
                 int secondaryTextColor = ContextCompat.getColor(getContext(), R.color.colorTextSecondary);
-                variationsContainer.addView(translationView);
+                llVariationsContainer.addView(tvTranslation);
                 if (!translationMeaning.getValue().isEmpty()) {
-                    TextView meaningView = new TextView(getContext());
-                    meaningView.setText(translationMeaning.getValue());
-                    meaningView.setLayoutParams(paramsSecondLevel);
-                    meaningView.setTextSize(TypedValue.COMPLEX_UNIT_SP, THIRD_LEVEL_TEXT_SIZE);
-                    meaningView.setTypeface(null, Typeface.ITALIC);
-                    meaningView.setTextColor(secondaryTextColor);
-                    variationsContainer.addView(meaningView);
+                    TextView tvMeaning = new TextView(getContext());
+                    tvMeaning.setText(translationMeaning.getValue());
+                    tvMeaning.setLayoutParams(paramsSecondLevel);
+                    tvMeaning.setTextSize(TypedValue.COMPLEX_UNIT_SP, THIRD_LEVEL_TEXT_SIZE);
+                    tvMeaning.setTypeface(null, Typeface.ITALIC);
+                    tvMeaning.setTextColor(secondaryTextColor);
+                    llVariationsContainer.addView(tvMeaning);
                 }
             }
         }
         if (!variations.isEmpty())
-            variationsContainer.addView(makeApiNoticeTextView());
-        this.addView(variationsContainer);
+            llVariationsContainer.addView(makeApiNoticeTextView());
+        this.addView(llVariationsContainer);
     }
 
     /**

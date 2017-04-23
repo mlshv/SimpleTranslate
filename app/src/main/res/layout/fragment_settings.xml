@@ -34,7 +34,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Очистить кэш"
+            android:text="@string/clear_cache"
             android:layout_gravity="center"
             android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"/>
@@ -52,7 +52,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Очистить историю"
+            android:text="@string/clear_history"
             android:layout_gravity="center"
             android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"/>
@@ -70,7 +70,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Очистить избранное"
+            android:text="@string/clear_favorites"
             android:layout_gravity="center"
             android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"/>
@@ -88,7 +88,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Обновить список языков"
+            android:text="@string/update_lang_list"
             android:layout_gravity="center"
             android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"/>
@@ -105,7 +105,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="О приложении"
+            android:text="@string/about_the_app"
             android:layout_gravity="center"
             android:textSize="18sp"
             android:textColor="@color/colorTextPrimary"/>
