@@ -2,6 +2,7 @@ package me.mlshv.simpletranslate.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -23,17 +24,32 @@ public class MainActivity extends AppCompatActivity {
     private HistoryFragment historyFragment;
     private FavoritesFragment favoritesFragment;
     private SettingsFragment settingsFragment;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkLangsLoaded();
-        translateFragment = new TranslateFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_container, translateFragment)
-                .commit();
         initBottomNavigation();
+
+        if (savedInstanceState != null) {
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "currentFragment");
+            if (currentFragment.isAdded()) {
+                getSupportFragmentManager().beginTransaction()
+                        .show(currentFragment)
+                        .commit();
+            } else {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.main_container, currentFragment)
+                        .commit();
+            }
+        } else {
+            translateFragment = new TranslateFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_container, translateFragment)
+                    .commit();
+        }
     }
 
     private void checkLangsLoaded() {
@@ -76,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void goToFragment(Fragment fragment) {
+        currentFragment = fragment;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_container, fragment)
                 .commit();
@@ -102,5 +119,11 @@ public class MainActivity extends AppCompatActivity {
         translateFragment.setArguments(args);
         goToFragment(translateFragment);
         navigation.getMenu().getItem(0).setChecked(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "currentFragment", currentFragment);
     }
 }

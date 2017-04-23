@@ -54,7 +54,7 @@ public class TranslationVariationsView extends ScrollView {
         for (String variation : vMap.keySet()) {
             TextView tvVariation = new TextView(getContext());
             tvVariation.setTextSize(TypedValue.COMPLEX_UNIT_SP, FIRST_LEVEL_TEXT_SIZE);
-            tvVariation.setText(variation);
+            tvVariation.setText(variation.split(", ")[0]); // костыль, убираем часть речи из строки
             int textColorAccent = ContextCompat.getColor(getContext(), R.color.colorTextAccent);
             tvVariation.setTextColor(textColorAccent);
             llVariationsContainer.addView(tvVariation);
