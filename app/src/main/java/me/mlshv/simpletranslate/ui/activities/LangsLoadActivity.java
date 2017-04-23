@@ -9,10 +9,10 @@ import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
+import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Lang;
 import me.mlshv.simpletranslate.network.LangsLoadTask;
-import me.mlshv.simpletranslate.util.SpHelper;
 
 public class LangsLoadActivity extends AppCompatActivity {
     private LangsLoadTask langsLoadTask;
@@ -33,7 +33,7 @@ public class LangsLoadActivity extends AppCompatActivity {
             DbManager dbManager = new DbManager(App.getInstance()).open();
             dbManager.updateLanguages(langsList);
             dbManager.close();
-            SpHelper.setLangListLoadedTrue();
+            Util.SPrefs.setLangListLoadedTrue();
             finish();
             return null;
         }

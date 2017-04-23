@@ -9,13 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import me.mlshv.simpletranslate.R;
+import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.ui.fragments.FavoritesFragment;
 import me.mlshv.simpletranslate.ui.fragments.HistoryFragment;
 import me.mlshv.simpletranslate.ui.fragments.SettingsFragment;
 import me.mlshv.simpletranslate.ui.fragments.TranslateFragment;
-import me.mlshv.simpletranslate.util.BottomNavigationViewHelper;
-import me.mlshv.simpletranslate.util.SpHelper;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navigation;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkLangsLoaded() {
-        if (!SpHelper.isLangListLoaded()) {
+        if (!Util.SPrefs.isLangListLoaded()) {
             Intent intent = new Intent(this, LangsLoadActivity.class);
             startActivity(intent);
         }
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private void initBottomNavigation() {
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.removeShiftMode(navigation);
+        Util.bottomNavigationRemoveShiftMode(navigation);
     }
 
     @Override

@@ -4,7 +4,6 @@ package me.mlshv.simpletranslate.network;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.model.Lang;
 
 public class LangsLoadRequest {

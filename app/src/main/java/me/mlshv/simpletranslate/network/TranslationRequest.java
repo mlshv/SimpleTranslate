@@ -11,8 +11,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+
+import me.mlshv.simpletranslate.Util;
 
 public class TranslationRequest {
     private HttpURLConnection urlConnection = null;

@@ -13,7 +13,7 @@ import java.util.List;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
-import me.mlshv.simpletranslate.util.LangUtil;
+import me.mlshv.simpletranslate.Util;
 
 public class LangChangeActivity extends AppCompatActivity {
     @Override
@@ -21,7 +21,7 @@ public class LangChangeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lang_change);
 
-        final List<String> langNames = LangUtil.getLangNames();
+        final List<String> langNames = Util.Langs.getLangNames();
         ListView languagesListView = (ListView) findViewById(R.id.languages_list);
         languagesListView.setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.languages_list_item, langNames));
         languagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

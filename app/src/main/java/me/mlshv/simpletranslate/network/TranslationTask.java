@@ -9,10 +9,10 @@ import org.json.JSONException;
 import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
+import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.data.model.TranslationVariations;
-import me.mlshv.simpletranslate.util.SpHelper;
 
 public class TranslationTask extends AsyncTask<Object, String, TranslationTaskResult> {
     private TranslationRequest translationRequest;
@@ -33,8 +33,8 @@ public class TranslationTask extends AsyncTask<Object, String, TranslationTaskRe
     protected TranslationTaskResult doInBackground(Object... params) {
         Log.d(App.tag(this), "TranslationTask запущена");
         String textToTranslate = (String) params[0];
-        String source = SpHelper.loadSourceLangCode();
-        String target = SpHelper.loadTargetLangCode();
+        String source = Util.SPrefs.loadSourceLangCode();
+        String target = Util.SPrefs.loadTargetLangCode();
         Translation t = dbManager.tryGetFromCache(textToTranslate, source + "-" + target);
         if (t != null) {
             Log.d(App.tag(this), "Достал из кэша " + t);

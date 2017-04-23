@@ -35,6 +35,7 @@ import java.util.concurrent.Callable;
 
 import me.mlshv.simpletranslate.App;
 import me.mlshv.simpletranslate.R;
+import me.mlshv.simpletranslate.Util;
 import me.mlshv.simpletranslate.data.db.DbManager;
 import me.mlshv.simpletranslate.data.model.Translation;
 import me.mlshv.simpletranslate.network.TranslationTask;
@@ -43,8 +44,6 @@ import me.mlshv.simpletranslate.ui.activities.LangChangeActivity;
 import me.mlshv.simpletranslate.ui.widgets.TranslateInput;
 import me.mlshv.simpletranslate.ui.widgets.TranslationErrorView;
 import me.mlshv.simpletranslate.ui.widgets.TranslationVariationsView;
-import me.mlshv.simpletranslate.util.LangUtil;
-import me.mlshv.simpletranslate.util.SpHelper;
 
 public class TranslateFragment extends Fragment {
     private TextView sourceLangLabel;
@@ -191,15 +190,15 @@ public class TranslateFragment extends Fragment {
     }
 
     private void setSourceLangCode(String langCode) {
-        String langName = LangUtil.getNameByCode(langCode);
+        String langName = Util.Langs.getNameByCode(langCode);
         sourceLangLabel.setText(langName);
-        SpHelper.saveSourceLangCode(langCode);
+        Util.SPrefs.saveSourceLangCode(langCode);
     }
 
     private void setTargetLangCode(String langCode) {
-        String langName = LangUtil.getNameByCode(langCode);
+        String langName = Util.Langs.getNameByCode(langCode);
         targetLangLabel.setText(langName);
-        SpHelper.saveTargetLangCode(langCode);
+        Util.SPrefs.saveTargetLangCode(langCode);
     }
 
     private void chooseLanguage(int requestLangCode) {
@@ -214,10 +213,10 @@ public class TranslateFragment extends Fragment {
         String langName = data.getStringExtra("language");
         switch (requestCode) {
             case REQUEST_CHANGE_SOURCE_LANG:
-                setSourceLangCode(LangUtil.getCodeByName(langName));
+                setSourceLangCode(Util.Langs.getCodeByName(langName));
                 break;
             case REQUEST_CHANGE_TARGET_LANG:
-                setTargetLangCode(LangUtil.getCodeByName(langName));
+                setTargetLangCode(Util.Langs.getCodeByName(langName));
                 break;
         }
     }
@@ -226,8 +225,8 @@ public class TranslateFragment extends Fragment {
         @Override
         public void onClick(View view) {
             // меняем местами source и target
-            String newSourceLangCode = SpHelper.loadTargetLangCode();
-            String newTargetLangCode = SpHelper.loadSourceLangCode();
+            String newSourceLangCode = Util.SPrefs.loadTargetLangCode();
+            String newTargetLangCode = Util.SPrefs.loadSourceLangCode();
             setSourceLangCode(newSourceLangCode);
             setTargetLangCode(newTargetLangCode);
             performTranslationTask();
@@ -410,8 +409,8 @@ public class TranslateFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // обновляем направление перевода и ставим в поле ввода последний переводимый текст
-        String source = SpHelper.loadSourceLangCode();
-        String target = SpHelper.loadTargetLangCode();
+        String source = Util.SPrefs.loadSourceLangCode();
+        String target = Util.SPrefs.loadTargetLangCode();
         setSourceLangCode(source);
         setTargetLangCode(target);
         dbManager.open();
