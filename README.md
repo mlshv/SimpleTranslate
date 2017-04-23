@@ -16,19 +16,13 @@
 * Кэширование
 
 ### Скриншоты
-<img src="screenshots/translate.jpg" alt="Перевод" style="width: 250px;"/>
-<p></p>
-<img src="screenshots/langs.jpg" alt="Выбор языка" style="width: 250px;"/>
-<p></p>
-<img src="screenshots/history.jpg" alt="История" style="width: 250px;"/>
-<p></p>
-<img src="screenshots/favorites.jpg" alt="Избранное" style="width: 250px;"/>
-<p></p>
-<img src="screenshots/settings.jpg" alt="Настройки" style="width: 250px;"/>
-<p></p>
-<img src="screenshots/refresh.jpg" alt="Обновление списка языков" style="width: 250px;"/>
-<p></p>
-<img src="screenshots/about.jpg" alt="О приложении" style="width: 250px;"/>
+<img src="screenshots/translate.jpg" alt="Перевод" width="250" style="margin=10px;"/>
+<img src="screenshots/langs.jpg" alt="Выбор языка" width="250" style="margin=10px;"/>
+<img src="screenshots/history.jpg" alt="История" width="250" style="margin=10px;"/>
+<img src="screenshots/favorites.jpg" alt="Избранное" width="250" style="margin=10px;"/>
+<img src="screenshots/settings.jpg" alt="Настройки" width="250" style="margin=10px;"/>
+<img src="screenshots/refresh.jpg" alt="Обновление списка языков" width="250" style="margin=10px;"/>
+<img src="screenshots/about.jpg" alt="О приложении" width="250" style="margin=10px;"/>
 
 ### Известные баги
 * Страница с переводом обнуляется при смене ориентации экрана.
